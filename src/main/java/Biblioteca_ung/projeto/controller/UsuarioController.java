@@ -22,6 +22,12 @@ public class UsuarioController {
         return "biblioteca"; // Retorna a página da biblioteca
     }
 
+    // Cadastro Usuário
+    // @GetMapping("/biblioteca/perfil/form")
+    // public String mostrarFormularioPerfil() {
+    // return "cadastro-perfil";
+    // }
+
     @PostMapping("/salvar-usuario")
     public String salvar(@ModelAttribute Usuario usuario) {
         usuarioService.salvar(usuario);

@@ -33,6 +33,11 @@ public class BibliotecaController {
         model.addAttribute("emprestimos", emprestimoService.listarTodos());
         return "biblioteca"; // arquivo biblioteca.html
     }
+
+    @GetMapping("/cadastro/login")
+    public String telaCadastroBiblioteca() {
+        return "cadastro-biblioteca"; // nome do arquivo em src/main/resources/templates
+    }
 }
 
 /*
