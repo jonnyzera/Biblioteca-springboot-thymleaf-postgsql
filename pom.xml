@@ -87,6 +87,12 @@
     <artifactId>spring-boot-starter-web</artifactId>
 	</dependency>
 	
+	 <!-- ... seus outros starters ... -->
+  		<dependency>
+   		 <groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-validation</artifactId>
+ 		 </dependency>
+	
 		</dependencies>	
 
 	<build>
