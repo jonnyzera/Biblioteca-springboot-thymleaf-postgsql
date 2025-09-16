@@ -87,6 +87,7 @@
   		    <artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 	
+<<<<<<< HEAD
 		<!-- Spring Security-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -99,6 +100,15 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 	</dependencies>	
+=======
+	 <!-- ... seus outros starters ... -->
+  		<dependency>
+   		 <groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-validation</artifactId>
+ 		 </dependency>
+	
+		</dependencies>	
+>>>>>>> 5da2da5a6b73c1f4d33fbe675d36431c6a2170dd
 
 	<build>
 		<plugins>
