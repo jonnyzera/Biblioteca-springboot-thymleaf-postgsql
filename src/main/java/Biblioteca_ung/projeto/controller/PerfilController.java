@@ -1,35 +1,53 @@
 package Biblioteca_ung.projeto.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.validation.Valid;
+import Biblioteca_ung.projeto.dto.PerfilCadastroDTO;
+import Biblioteca_ung.projeto.model.Usuario;
+import Biblioteca_ung.projeto.service.UsuarioService;
 
 @Controller
 @RequestMapping("/biblioteca/perfil")
 public class PerfilController {
 
-    // Exibe o formulário (GET)
-    @GetMapping("/form")
-    public String mostrarFormulario() {
-        return "cadastro-perfil"; // nome do arquivo HTML em src/main/resources/templates
+    private final UsuarioService usuarioService;
+
+    public PerfilController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
-    // Recebe e processa o formulário (POST)
+    @GetMapping("/form")
+    public String mostrarFormulario(Model model) {
+        model.addAttribute("perfilCadastroDTO", new PerfilCadastroDTO());
+        return "cadastro-perfil";
+    }
+
     @PostMapping("/salvar")
-    public String salvarPerfil(@RequestParam String tipo,
-            @RequestParam String nome,
-            @RequestParam String email,
-            @RequestParam String senha,
-            @RequestParam String novaSenha,
-            @RequestParam String cpf,
-            @RequestParam(required = false) String carteirinha,
-            @RequestParam(required = false) String registro) {
+    public String salvarPerfil(@ModelAttribute("perfilCadastroDTO") @Valid PerfilCadastroDTO perfilCadastroDTO,
+            BindingResult result,
+            Model model) {
 
-        // Aqui você coloca a lógica para salvar no banco
-        // Pode diferenciar se é bibliotecário ou usuário pelo campo "tipo"
+        if (!perfilCadastroDTO.getSenha().equals(perfilCadastroDTO.getNovaSenha())) {
+            result.rejectValue("novaSenha", "error.perfilCadastroDTO", "As senhas não coincidem");
+        }
 
-        return "redirect:/login"; // redireciona para login depois de salvar
+        if (result.hasErrors()) {
+            return "cadastro-perfil";
+        }
+
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setNome(perfilCadastroDTO.getNome());
+        novoUsuario.setEmail(perfilCadastroDTO.getEmail());
+        novoUsuario.setSenha(perfilCadastroDTO.getSenha());
+        novoUsuario.setRole(perfilCadastroDTO.getTipo().toUpperCase());
+        usuarioService.salvar(novoUsuario);
+
+        return "redirect:/biblioteca/cadastro/login";
     }
 }
