@@ -21,14 +21,15 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .authorizeHttpRequests(authorize -> authorize
-                                                .requestMatchers("/", "/login", "/biblioteca/perfil/**", "/css/**",
-                                                                "/js/**")
+                                                .requestMatchers("/", "/login", "/biblioteca/perfil/form", "/css/**",
+                                                                "/js/**", "/imagens/**", "/catalogo")
                                                 .permitAll()
+                                                .requestMatchers("/bibliotecario/**").hasRole("BIBLIOTECARIO")
                                                 .anyRequest().authenticated())
                                 .formLogin(form -> form
                                                 .loginPage("/login")
                                                 .loginProcessingUrl("/login")
-                                                .defaultSuccessUrl("/biblioteca", true)
+                                                .defaultSuccessUrl("/catalogo", true)
                                                 .failureUrl("/login?error=true")
                                                 .permitAll())
                                 .logout(logout -> logout

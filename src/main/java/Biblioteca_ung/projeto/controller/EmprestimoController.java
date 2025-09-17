@@ -24,12 +24,12 @@ public class EmprestimoController {
     @PostMapping("/emprestar")
     public String emprestar(@RequestParam Long usuarioId, @RequestParam Long livroId) {
         emprestimoService.criarEmprestimo(usuarioId, livroId);
-        return "redirect:/biblioteca/emprestimo";
+        return "redirect:/catalogo"; // Redireciona para o catálogo após o empréstimo
     }
 
     @PostMapping("/devolver")
     public String devolver(@RequestParam Long emprestimoId) {
         emprestimoService.deletar(emprestimoId);
-        return "biblioteca";
+        return "biblioteca/bibliotecario"; // Redireciona para o painel do bibliotecário após a devolução
     }
 }

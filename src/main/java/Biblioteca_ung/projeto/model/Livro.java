@@ -13,6 +13,14 @@ public class Livro {
     private String titulo;
     private String autor;
     private Integer anoPublicacao;
+    private String categoria;
+    private String descricao;
+    private String urlCapa;
 
-    private boolean disponivel = true;
+    // A lógica de disponibilidade agora é baseada na quantidade
+    private Integer quantidadeDisponivel;
+
+    public boolean isDisponivel() {
+        return this.quantidadeDisponivel > 0;
+    }
 }

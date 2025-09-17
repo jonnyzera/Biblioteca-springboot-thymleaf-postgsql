@@ -46,8 +46,8 @@ public class EmprestimoService {
         Livro livro = livroRepository.findById(livroId)
                 .orElseThrow(() -> new RuntimeException("Livro não encontrado"));
 
-        if (!livro.isDisponivel()) {
-            throw new RuntimeException("Livro já está emprestado!");
+        if (livro.getQuantidadeDisponivel() <= 0) {
+            throw new RuntimeException("Livro não está disponível para empréstimo!");
         }
 
         Emprestimo emprestimo = new Emprestimo();
@@ -56,8 +56,19 @@ public class EmprestimoService {
         emprestimo.setDataEmprestimo(LocalDate.now());
         emprestimo.setDataDevolucao(LocalDate.now().plusDays(7));
 
-        livro.setDisponivel(false);
+        livro.setQuantidadeDisponivel(livro.getQuantidadeDisponivel() - 1);
         livroRepository.save(livro);
         emprestimoRepository.save(emprestimo);
+    }
+
+    public void devolverEmprestimo(Long emprestimoId) {
+        Emprestimo emprestimo = emprestimoRepository.findById(emprestimoId)
+                .orElseThrow(() -> new RuntimeException("Empréstimo não encontrado!"));
+
+        Livro livro = emprestimo.getLivro();
+        livro.setQuantidadeDisponivel(livro.getQuantidadeDisponivel() + 1);
+        livroRepository.save(livro);
+
+        emprestimoRepository.delete(emprestimo);
     }
 }

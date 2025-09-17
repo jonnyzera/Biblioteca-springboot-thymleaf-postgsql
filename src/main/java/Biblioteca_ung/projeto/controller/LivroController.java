@@ -2,12 +2,10 @@ package Biblioteca_ung.projeto.controller;
 
 import Biblioteca_ung.projeto.model.Livro;
 import Biblioteca_ung.projeto.service.LivroService;
-import org.springframework.ui.Model;
-
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequestMapping("biblioteca/livro")
 public class LivroController {
 
@@ -17,21 +15,15 @@ public class LivroController {
         this.livroService = livroService;
     }
 
-    @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("livro", livroService.listarTodos());
-        return "biblioteca"; // exibe biblioteca.html
-    }
-
     @PostMapping("/salvar")
-    @ResponseBody
-    public Livro salvar(@ModelAttribute Livro livro) {
-        return livroService.salvar(livro); // salva e retorna o livro salvo
+    public String salvar(@ModelAttribute Livro livro) {
+        livroService.salvar(livro);
+        return "redirect:/bibliotecario";
     }
 
-    @DeleteMapping("/{id}")
-    public String deletar(@PathVariable Long id) {
+    @PostMapping("/deletar")
+    public String deletar(@RequestParam Long id) {
         livroService.deletar(id);
-        return ResponseEntity.noContent().build().toString(); // HTTP 204 No Content
+        return "redirect:/bibliotecario";
     }
 }

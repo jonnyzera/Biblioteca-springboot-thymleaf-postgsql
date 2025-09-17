@@ -3,8 +3,6 @@ package Biblioteca_ung.projeto;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Optional;
-
 import Biblioteca_ung.projeto.model.Usuario;
 import Biblioteca_ung.projeto.repository.UsuarioRepository;
 import Biblioteca_ung.projeto.service.UsuarioService;

@@ -101,29 +101,26 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link"
-                                th:classappend="${#httpServletRequest.requestURI == '/catalogo' ? 'active' : ''}"
+                            <a class="nav-link" th:classappend="${activePage == 'catalogo' ? 'active' : ''}"
                                 th:href="@{/catalogo}">
                                 <i class="bi bi-bookshelf me-1"></i>Catálogo
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link"
-                                th:classappend="${#httpServletRequest.requestURI == '/emprestimos' ? 'active' : ''}"
+                            <a class="nav-link" th:classappend="${activePage == 'emprestimos' ? 'active' : ''}"
                                 th:href="@{/emprestimos}">
                                 <i class="bi bi-box-seam me-1"></i>Empréstimos
                             </a>
                         </li>
                         <li class="nav-item" sec:authorize="hasRole('BIBLIOTECARIO')">
-                            <a class="nav-link"
-                                th:classappend="${#httpServletRequest.requestURI == '/bibliotecario' ? 'active' : ''}"
+                            <a class="nav-link" th:classappend="${activePage == 'bibliotecario' ? 'active' : ''}"
                                 th:href="@{/bibliotecario}">
                                 <i class="bi bi-gear-fill me-1"></i>Gerenciar
                             </a>
                         </li>
                     </ul>
                     <div class="d-flex align-items-center">
-                        <div class="dropdown">
+                        <div class="dropdown" sec:authorize="isAuthenticated()">
                             <a class="nav-link dropdown-toggle text-white" href="#" role="button"
                                 id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle me-1"></i>

@@ -24,5 +24,11 @@ public class Usuario {
     @Column(unique = true, nullable = false, length = 14)
     private String cpf;
 
-    private String role; // Campo adicionado
+    private String role;
+    private String carteirinha;
+    private String registro;
+    private String tipoUsuario; // (Para 'Estudante' / 'Profissional' no perfil)
+    private String telefone;
+    private String endereco;
+    private String urlFoto;
 }
