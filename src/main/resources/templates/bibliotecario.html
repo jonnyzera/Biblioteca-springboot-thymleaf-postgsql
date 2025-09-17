@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Painel do Bibliotecário</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .navbar-brand,
+        .nav-link,
+        .navbar-text,
+        .btn {
+            transition: color 0.2s ease, background-color 0.2s ease;
+        }
+
+        .nav-link.active {
+            font-weight: bold;
+        }
+
+        .form-card {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+        }
+
+        .table thead th {
+            background-color: #e9ecef;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .btn-green-icon {
+            color: #198754;
+            transition: color 0.2s;
+        }
+
+        .btn-green-icon:hover {
+            color: #145c39;
+        }
+
+        #previewCapaUrl {
+            max-height: 100px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        #previewCapaUpload {
+            max-height: 100px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .footer a {
+            color: #198754;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #145c39;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="mb-4">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" th:href="@{/catalogo}">
+                    <i class="bi bi-book me-2"></i>Biblioteca
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                th:classappend="${#httpServletRequest.requestURI == '/catalogo' ? 'active' : ''}"
+                                th:href="@{/catalogo}">
+                                <i class="bi bi-bookshelf me-1"></i>Catálogo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                th:classappend="${#httpServletRequest.requestURI == '/emprestimos' ? 'active' : ''}"
+                                th:href="@{/emprestimos}">
+                                <i class="bi bi-box-seam me-1"></i>Empréstimos
+                            </a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('BIBLIOTECARIO')">
+                            <a class="nav-link"
+                                th:classappend="${#httpServletRequest.requestURI == '/bibliotecario' ? 'active' : ''}"
+                                th:href="@{/bibliotecario}">
+                                <i class="bi bi-gear-fill me-1"></i>Gerenciar
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>
+                                <span th:text="${#authentication.name}">Nome do Usuário</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                                <li class="dropdown-header">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    <span th:text="${#authentication.name}">Nome do Usuário</span>
+                                    <span class="badge rounded-pill bg-success ms-2"
+                                        th:text="${userRole}">Usuário</span>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <h6 class="dropdown-header">Informações</h6>
+                                </li>
+                                <li><span class="dropdown-item-text">
+                                        <i class="bi bi-envelope me-2"></i><span
+                                            th:text="${usuario.email}">email@example.com</span>
+                                    </span></li>
+                                <li><span class="dropdown-item-text">
+                                        <i class="bi bi-credit-card me-2"></i><span
+                                            th:text="${usuario.cpf}">000.000.000-00</span>
+                                    </span></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <div sec:authorize="hasRole('USUARIO')">
+                                    <li>
+                                        <h6 class="dropdown-header">Meus Empréstimos</h6>
+                                    </li>
+                                    <li th:if="${#lists.isEmpty(emprestimos)}"><span
+                                            class="dropdown-item-text text-muted">
+                                            Nenhum empréstimo ativo.</span></li>
+                                    <li th:each="e : ${emprestimos}"><span class="dropdown-item-text">
+                                            <i class="bi bi-book-half me-2"></i><span th:text="${e.livro.titulo}">Título
+                                                do Livro</span><br>
+                                            <small class="text-muted ms-4"
+                                                th:text="'Devolução: ' + ${#temporals.format(e.dataDevolucao, 'dd/MM/yyyy')}"></small>
+                                        </span></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                </div>
+                                <li><a class="dropdown-item" th:href="@{/perfil/editar}"><i
+                                            class="bi bi-pencil-square me-2"></i>Editar Perfil</a></li>
+                                <li><a class="dropdown-item" th:href="@{/logout}"><i
+                                            class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="mb-4"><i class="bi bi-person-gear me-2"></i>Painel do Bibliotecário</h1>
+        <hr>
+
+        <section class="mt-5">
+            <h2 class="mb-4">Gerenciamento de Livros</h2>
+            <div class="card form-card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-plus-circle me-2"></i>Cadastrar Novo Livro
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/biblioteca/livro/salvar}" method="post" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <input type="text" name="titulo" placeholder="Título" class="form-control" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="autor" placeholder="Autor" class="form-control" required>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" name="anoPublicacao" placeholder="Ano" class="form-control"
+                                    required>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="categoria" placeholder="Categoria" class="form-control"
+                                    required>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" name="quantidadeDisponivel" placeholder="Quantidade"
+                                    class="form-control" required>
+                            </div>
+                            <div class="col-12">
+                                <textarea name="descricao" placeholder="Descrição do Livro" class="form-control"
+                                    rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label d-block">Capa do Livro:</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="capaMethod" id="capaUrlRadio"
+                                        value="url" checked>
+                                    <label class="form-check-label" for="capaUrlRadio">URL</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="capaMethod" id="capaUploadRadio"
+                                        value="upload">
+                                    <label class="form-check-label" for="capaUploadRadio">Upload</label>
+                                </div>
+                            </div>
+                            <div id="capaUrlInput" class="col-md-6">
+                                <input type="text" id="urlCapa" name="urlCapa" placeholder="URL da Capa"
+                                    class="form-control">
+                                <img id="previewCapaUrl" src="#" alt="Pré-visualização da Capa"
+                                    class="img-thumbnail mt-2" style="max-height: 100px; display: none;">
+                            </div>
+                            <div id="capaUploadInput" class="col-md-6" style="display: none;">
+                                <input type="file" id="capaUpload" name="capaFile" class="form-control">
+                                <img id="previewCapaUpload" src="#" alt="Pré-visualização da Capa"
+                                    class="img-thumbnail mt-2" style="max-height: 100px; display: none;">
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-success w-100" type="submit">Salvar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card form-card">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-bookshelf me-2"></i>Livros no Acervo
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Autor</th>
+                                <th>Ano</th>
+                                <th>Categoria</th>
+                                <th>Status</th>
+                                <th>Quantidade</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="livro : ${livros}">
+                                <td th:text="${livro.titulo}"></td>
+                                <td th:text="${livro.autor}"></td>
+                                <td th:text="${livro.anoPublicacao}"></td>
+                                <td th:text="${livro.categoria}"></td>
+                                <td>
+                                    <span th:if="${livro.quantidadeDisponivel > 0}"
+                                        class="badge bg-success">Disponível</span>
+                                    <span th:unless="${livro.quantidadeDisponivel > 0}"
+                                        class="badge bg-danger">Emprestado</span>
+                                </td>
+                                <td th:text="${livro.quantidadeDisponivel}"></td>
+                                <td>
+                                    <a href="#" class="btn btn-green-icon me-2" data-bs-toggle="tooltip"
+                                        title="Editar Livro">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form th:action="@{/biblioteca/livro/{id}(id=${livro.id})}" method="post"
+                                        style="display:inline;">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Tem certeza que deseja deletar este livro?');"
+                                            data-bs-toggle="tooltip" title="Deletar Livro">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-5">
+            <h2 class="mb-4">Gerenciamento de Empréstimos</h2>
+            <div class="card form-card">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-calendar-check me-2"></i>Empréstimos Ativos
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Livro</th>
+                                <th>Usuário</th>
+                                <th>Data Empréstimo</th>
+                                <th>Data Devolução</th>
+                                <th>Dias Restantes</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="e : ${emprestimos}">
+                                <td th:text="${e.livro.titulo}"></td>
+                                <td th:text="${e.usuario.nome}"></td>
+                                <td th:text="${#temporals.format(e.dataEmprestimo, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${#temporals.format(e.dataDevolucao, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${e.diasRestantes}"></td>
+                                <td>
+                                    <form th:action="@{/biblioteca/emprestimo/devolver}" method="post">
+                                        <input type="hidden" name="emprestimoId" th:value="${e.id}" />
+                                        <button type="submit" class="btn btn-warning btn-sm"
+                                            onclick="return confirm('Confirmar devolução?');" data-bs-toggle="tooltip"
+                                            title="Devolver Livro">
+                                            <i class="bi bi-arrow-return-left"></i> Devolver
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer mt-5 pt-4 pb-4">
+        <div class="container">
+            <div class="row text-center text-md-start">
+                <div class="col-md-6 mb-3">
+                    <h5 class="text-uppercase font-weight-bold text-success">Biblioteca</h5>
+                    <p class="text-white">O seu portal para um mundo de conhecimento.</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5 class="text-uppercase font-weight-bold text-success">Links Úteis</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Núcleo Trabalhabilidade</a></li>
+                        <li><a href="#" class="text-white">Blog</a></li>
+                        <li><a href="#" class="text-white">GO Kursos</a></li>
+                        <li><a href="#" class="text-white">Trabalhe Conosco</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-0">
+            <div class="text-center">
+                <p class="mb-0 text-white">© 2025 Biblioteca. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Lógica para alternar entre URL e Upload
+            const capaUrlRadio = document.getElementById('capaUrlRadio');
+            const capaUploadRadio = document.getElementById('capaUploadRadio');
+            const capaUrlInputDiv = document.getElementById('capaUrlInput');
+            const capaUploadInputDiv = document.getElementById('capaUploadInput');
+            const urlCapaInput = document.getElementById('urlCapa');
+            const capaUploadInput = document.getElementById('capaUpload');
+            const previewCapaUrl = document.getElementById('previewCapaUrl');
+            const previewCapaUpload = document.getElementById('previewCapaUpload');
+
+            function toggleCapaInput() {
+                if (capaUrlRadio.checked) {
+                    capaUrlInputDiv.style.display = 'block';
+                    capaUploadInputDiv.style.display = 'none';
+                    capaUploadInput.value = '';
+                    previewCapaUpload.style.display = 'none';
+                } else {
+                    capaUrlInputDiv.style.display = 'none';
+                    capaUploadInputDiv.style.display = 'block';
+                    urlCapaInput.value = '';
+                    previewCapaUrl.style.display = 'none';
+                }
+            }
+
+            capaUrlRadio.addEventListener('change', toggleCapaInput);
+            capaUploadRadio.addEventListener('change', toggleCapaInput);
+
+            // Pré-visualização da capa via URL
+            urlCapaInput.addEventListener('input', function () {
+                const url = this.value;
+                if (url) {
+                    previewCapaUrl.src = url;
+                    previewCapaUrl.style.display = 'block';
+                } else {
+                    previewCapaUrl.src = '#';
+                    previewCapaUrl.style.display = 'none';
+                }
+            });
+
+            // Pré-visualização da capa via Upload
+            capaUploadInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewCapaUpload.src = e.target.result;
+                        previewCapaUpload.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    previewCapaUpload.src = '#';
+                    previewCapaUpload.style.display = 'none';
+                }
+            });
+        }, false);
+    </script>
+</body>
+
+</html>

@@ -3,12 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro na Biblioteca</title>
+    <title>Criar Perfil Completo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <style>
-        html {
+        html,
+        body {
             height: 100%;
         }
 
@@ -19,184 +21,133 @@
             flex-direction: column;
         }
 
-        .login-card {
-            background-color: #ffffff;
+        .form-card {
+            background: #fff;
+            padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
-            padding: 40px;
-            position: relative;
-        }
-
-        .illustration {
-            max-width: 100%;
-            border-radius: 16px;
-        }
-
-        .form-title {
-            font-weight: 600;
-            font-size: 1.6rem;
-        }
-
-        .link-minimal {
-            font-size: 0.9rem;
-            text-decoration: none;
-        }
-
-        .carousel-inner img {
-            max-height: 80px;
-            margin: auto;
-        }
-
-        .patrocinadores-section {
-            margin-top: 80px;
-            padding: 40px 0;
-            background-color: #f8f9fa;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .patrocinadores-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #343a40;
-            margin-bottom: 20px;
-        }
-
-        .fundadores h6 {
-            font-weight: 600;
-            font-size: 1rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            max-width: 500px;
+            margin: 50px auto;
         }
 
         footer {
             background-color: #198754;
-            margin-top: auto;
+            /* mesma cor do botão */
             color: #fff;
             padding: 15px 0;
             font-size: 0.9rem;
             text-align: center;
-            position: relative;
-            bottom: 0;
             width: 100%;
+            margin-top: auto;
+        }
+
+        .btn-voltar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #198754;
+            font-size: 1.4rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .btn-voltar:hover {
+            color: #145c39;
         }
     </style>
 </head>
 
-<body class="container mt-5">
+<body>
+    <a href="/biblioteca/cadastro/login" class="btn-voltar" title="Voltar para Login">
+        <i class="bi bi-arrow-left-circle"></i>
+    </a>
 
-    <div class="row justify-content-center align-items-center">
-        <!-- Formulário -->
-        <div class="col-md-6">
-            <div class="login-card">
-                <div class="mb-4 text-center">
-                    <h2 class="form-title">📚 Entrar Biblioteca</h2>
-                    <p class="text-muted">Preencha suas informações pessoais</p>
-                </div>
+    <div class="form-card">
 
-                <div th:if="${param.error}" class="alert alert-danger">
-                    Login ou senha incorretos.
-                </div>
+        <h3 class="text-center mb-4">Criar Perfil Completo</h3>
+        <form th:action="@{/biblioteca/perfil/salvar}" th:object="${perfilCadastroDTO}" method="post">
 
-                <form th:action="@{/login}" method="post">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">E-mail</label>
-                        <input type="email" name="username" id="username" class="form-control"
-                            placeholder="Digite seu e-mail" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Senha</label>
-                        <input type="password" name="password" id="password" class="form-control"
-                            placeholder="Digite sua senha" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tipo" class="form-label">Você é:</label>
-                        <select name="tipo" id="tipo" class="form-select" required>
-                            <option value="">-- Selecione --</option>
-                            <option value="usuario">Usuário</option>
-                            <option value="bibliotecario">Bibliotecário</option>
-                        </select>
-                    </div>
-
-                    <div class="text-center mt-2">
-                        <a href="/biblioteca/perfil/form" class="link-minimal text-primary">Não tem uma conta?
-                            Cadastre-se</a>
-                    </div>
-
-                    <div class="d-grid mt-3">
-                        <button type="submit" class="btn btn-success">Entrar</button>
-                    </div>
-                </form>
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+                <p>Por favor, corrija os erros abaixo:</p>
             </div>
-        </div>
 
-        <!-- Ilustração -->
-        <div class="col-md-6 text-center mt-4 mt-md-0">
-            <img src="https://img.freepik.com/vetores-premium/ilustracao-de-conceito-de-biblioteca_701961-53.jpg"
-                alt="Ilustração Biblioteca" class="illustration">
-        </div>
+            <div class="mb-3">
+                <label for="tipo" class="form-label">Você deseja se cadastrar como:</label>
+                <select th:field="*{tipo}" id="tipo" class="form-select" required>
+                    <option value="">-- Selecione --</option>
+                    <option value="usuario">Usuário</option>
+                    <option value="bibliotecario">Bibliotecário</option>
+                </select>
+                <div class="text-danger" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
+            </div>
+
+            <div id="extraUsuario" class="mb-3" style="display:none;">
+                <label for="carteirinha" class="form-label">Número da Carteirinha</label>
+                <input type="text" th:field="*{carteirinha}" id="carteirinha" class="form-control"
+                    placeholder="Digite o número da carteirinha">
+                <div class="text-danger" th:if="${#fields.hasErrors('carteirinha')}" th:errors="*{carteirinha}"></div>
+            </div>
+
+            <div id="extraBibliotecario" class="mb-3" style="display:none;">
+                <label for="registro" class="form-label">Registro do Conselho</label>
+                <input type="text" th:field="*{registro}" id="registro" class="form-control"
+                    placeholder="Digite seu registro profissional">
+                <div class="text-danger" th:if="${#fields.hasErrors('registro')}" th:errors="*{registro}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome</label>
+                <input type="text" th:field="*{nome}" id="nome" class="form-control" placeholder="Digite seu nome"
+                    required>
+                <div class="text-danger" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">E-mail</label>
+                <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="Digite seu e-mail"
+                    required>
+                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="senha" class="form-label">Senha</label>
+                <input type="password" th:field="*{senha}" id="senha" class="form-control"
+                    placeholder="Digite sua senha" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="novaSenha" class="form-label">Confirme a Senha</label>
+                <input type="password" th:field="*{novaSenha}" id="novaSenha" class="form-control"
+                    placeholder="Confirme sua senha" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('novaSenha')}" th:errors="*{novaSenha}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="cpf" class="form-label">CPF</label>
+                <input type="text" th:field="*{cpf}" id="cpf" class="form-control" placeholder="000.000.000-00"
+                    required>
+                <div class="text-danger" th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></div>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success">Salvar Perfil</button>
+            </div>
+        </form>
     </div>
 
-    <!-- Carrossel de patrocinadores -->
-    <div class="patrocinadores-section text-center">
-        <div class="patrocinadores-title">Nossos Patrocinadores</div>
-        <div id="patrocinadoresCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/512px-Microsoft_logo.svg.png"
-                        alt="Microsoft">
-                </div>
-                <div class="carousel-item">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/512px-Amazon_logo.svg.png"
-                        alt="Amazon">
-                </div>
-                <div class="carousel-item">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Google.png/512px-Google.png"
-                        alt="Google">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Fundadores da Biblioteca -->
-    <div class="mt-5 mb-5 text-center fundadores">
-        <h3 class="mb-4" style="font-weight: 600;">Fundadores da Biblioteca</h3>
-        <div class="row justify-content-center">
-            <div class="col-6 col-md-3 mb-4">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="João Silva"
-                    class="img-fluid rounded-circle mb-2" style="width: 120px; height: 120px; object-fit: cover;">
-                <h6>João Victor</h6>
-            </div>
-            <div class="col-6 col-md-3 mb-4">
-                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Maria Oliveira"
-                    class="img-fluid rounded-circle mb-2" style="width: 120px; height: 120px; object-fit: cover;">
-                <h6>Guilherme Silveira</h6>
-            </div>
-            <div class="col-6 col-md-3 mb-4">
-                <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Carlos Mendes"
-                    class="img-fluid rounded-circle mb-2" style="width: 120px; height: 120px; object-fit: cover;">
-                <h6>Leandro Aquino</h6>
-            </div>
-            <div class="col-6 col-md-3 mb-4">
-                <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Ana Souza"
-                    class="img-fluid rounded-circle mb-2" style="width: 120px; height: 120px; object-fit: cover;">
-                <h6>Leonardo Porcel</h6>
-            </div>
-        </div>
-    </div>
-
-    <!-- Apoio via Pix -->
-    <div class="mt-5 mb-5 text-center">
-        <div
-            style="background-color: #f1f3f5; border-radius: 20px; padding: 30px; max-width: 400px; margin: auto; box-shadow: 0 0 15px rgba(0,0,0,0.05);">
-            <h5 class="mb-3" style="font-weight: 600;">💚 Apoie o Projeto via Pix</h5>
-            <p class="text-muted small">Sua contribuição ajuda a manter e melhorar nossa biblioteca.</p>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/QR_code_for_mobile_English_Wikipedia.svg"
-                alt="QR Code Pix" style="width: 160px; height: 160px; border-radius: 12px;">
-            <p class="mt-3 text-muted small">Escaneie o QR Code com seu app bancário</p>
-        </div>
-    </div>
-
-    <!-- Rodapé -->
-    <footer class="text-center">
+    <footer>
         <p>© 2025 Biblioteca Comunitária - Todos os direitos reservados</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mostra/esconde campos extras conforme a escolha
+        document.getElementById('tipo').addEventListener('change', function () {
+            document.getElementById('extraUsuario').style.display = this.value === 'usuario' ? 'block' : 'none';
+            document.getElementById('extraBibliotecario').style.display = this.value === 'bibliotecario' ? 'block' : 'none';
+        });
+    </script>
+</body>
+
+</html>

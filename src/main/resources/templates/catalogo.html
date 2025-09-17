@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Livros</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .navbar-brand,
+        .nav-link,
+        .navbar-text,
+        .btn {
+            transition: color 0.2s ease, background-color 0.2s ease;
+        }
+
+        .nav-link.active {
+            font-weight: bold;
+        }
+
+        .book-card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            height: 100%;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .footer a {
+            color: #198754;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #145c39;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="mb-4">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" th:href="@{/catalogo}">
+                    <i class="bi bi-book-half me-2"></i>Biblioteca
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                th:classappend="${#httpServletRequest.requestURI == '/catalogo' ? 'active' : ''}"
+                                th:href="@{/catalogo}">
+                                <i class="bi bi-bookshelf me-1"></i>Catálogo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                th:classappend="${#httpServletRequest.requestURI == '/emprestimos' ? 'active' : ''}"
+                                th:href="@{/emprestimos}">
+                                <i class="bi bi-box-seam me-1"></i>Empréstimos
+                            </a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('BIBLIOTECARIO')">
+                            <a class="nav-link"
+                                th:classappend="${#httpServletRequest.requestURI == '/bibliotecario' ? 'active' : ''}"
+                                th:href="@{/bibliotecario}">
+                                <i class="bi bi-gear-fill me-1"></i>Gerenciar
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>
+                                <span th:text="${#strings.substringBefore(#authentication.name, ' ')}">Nome do
+                                    Usuário</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                                <li class="dropdown-header">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    <span th:text="${#authentication.name}">Nome do Usuário</span>
+                                    <span class="badge rounded-pill bg-success ms-2"
+                                        th:text="${userRole}">Usuário</span>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <h6 class="dropdown-header">Informações</h6>
+                                </li>
+                                <li><span class="dropdown-item-text">
+                                        <i class="bi bi-envelope me-2"></i><span
+                                            th:text="${usuario.email}">email@example.com</span>
+                                    </span></li>
+                                <li><span class="dropdown-item-text">
+                                        <i class="bi bi-credit-card me-2"></i><span
+                                            th:text="${usuario.cpf}">000.000.000-00</span>
+                                    </span></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <div sec:authorize="hasRole('USUARIO')">
+                                    <li>
+                                        <h6 class="dropdown-header">Meus Empréstimos</h6>
+                                    </li>
+                                    <li th:if="${#lists.isEmpty(emprestimos)}"><span
+                                            class="dropdown-item-text text-muted">
+                                            Nenhum empréstimo ativo.</span></li>
+                                    <li th:each="e : ${emprestimos}"><span class="dropdown-item-text">
+                                            <i class="bi bi-book-half me-2"></i><span th:text="${e.livro.titulo}">Título
+                                                do Livro</span><br>
+                                            <small class="text-muted ms-4"
+                                                th:text="'Devolução: ' + ${#temporals.format(e.dataDevolucao, 'dd/MM/yyyy')}"></small>
+                                        </span></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                </div>
+                                <li><a class="dropdown-item" th:href="@{/perfil/editar}"><i
+                                            class="bi bi-pencil-square me-2"></i>Editar Perfil</a></li>
+                                <li><a class="dropdown-item" th:href="@{/logout}"><i
+                                            class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="mb-4">📚 Catálogo de Livros</h1>
+        <hr>
+
+        <div th:each="categoria : ${categorias}">
+            <h2 class="mt-5 mb-4" th:text="${categoria}">Categoria do Livro</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col" th:each="livro : ${livros}" th:if="${livro.categoria == categoria}">
+                    <div class="card book-card" data-bs-toggle="tooltip" data-bs-placement="top"
+                        th:title="${livro.descricao}">
+                        <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
+                            class="card-img-top" th:alt="'Capa de ' + ${livro.titulo}">
+                        <div class="card-body book-details">
+                            <div>
+                                <h5 class="card-title" th:text="${livro.titulo}">Título do Livro</h5>
+                                <p class="card-text text-muted mb-1"><small th:text="${livro.autor}">Autor</small></p>
+                                <p class="card-text text-muted"><small th:text="'Ano: ' + ${livro.anoPublicacao}">Ano:
+                                        2025</small></p>
+                                <p class="card-text"><span class="badge bg-secondary"
+                                        th:text="${livro.categoria}">Categoria</span></p>
+                            </div>
+                            <div class="mt-auto">
+                                <span th:if="${livro.quantidadeDisponivel > 0}"
+                                    class="badge bg-success status-badge">Disponível (<span
+                                        th:text="${livro.quantidadeDisponivel}"></span>)</span>
+                                <span th:unless="${livro.quantidadeDisponivel > 0}"
+                                    class="badge bg-danger status-badge">Emprestado</span>
+                                <div th:if="${livro.quantidadeDisponivel > 0}" class="d-grid mt-3">
+                                    <form th:action="@{/biblioteca/emprestimo/emprestar}" method="post">
+                                        <input type="hidden" name="livroId" th:value="${livro.id}" />
+                                        <input type="hidden" name="usuarioId"
+                                            th:value="${#authentication.principal.id}" />
+                                        <button type="submit" class="btn btn-success w-100">Emprestar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-5 pt-4 pb-4">
+        <div class="container">
+            <div class="row text-center text-md-start">
+                <div class="col-md-6 mb-3">
+                    <h5 class="text-uppercase font-weight-bold text-success">Biblioteca</h5>
+                    <p class="text-white">O seu portal para um mundo de conhecimento.</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5 class="text-uppercase font-weight-bold text-success">Links Úteis</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Núcleo Trabalhabilidade</a></li>
+                        <li><a href="#" class="text-white">Blog</a></li>
+                        <li><a href="#" class="text-white">GO Kursos</a></li>
+                        <li><a href="#" class="text-white">Trabalhe Conosco</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-0">
+            <div class="text-center">
+                <p class="mb-0 text-white">© 2025 Biblioteca. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        }, false);
+    </script>
+</body>
+
+</html>
