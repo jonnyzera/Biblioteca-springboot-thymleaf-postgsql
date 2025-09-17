@@ -17,10 +17,10 @@
 <body class="container mt-4">
 
     <h1 class="mb-4">📚 Sistema Biblioteca</h1>
-    <a th:href="@{/logout}" class="btn btn-danger logout-btn">Sair</a>
+    <!-- <a th:href="@{/logout}" class="btn btn-danger logout-btn">Sair</a>
     <p>Você está logado como: <span th:text="${#authentication.name}"></span></p>
     <p>Seu perfil é: <span th:text="${userRole}"></span></p>
-
+    -->
     <div sec:authorize="hasRole('BIBLIOTECARIO')">
         <h2 class="mt-5">Seção do Bibliotecário</h2>
 

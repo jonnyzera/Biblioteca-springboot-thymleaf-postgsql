@@ -11,15 +11,18 @@ import jakarta.validation.Valid;
 import Biblioteca_ung.projeto.dto.PerfilCadastroDTO;
 import Biblioteca_ung.projeto.model.Usuario;
 import Biblioteca_ung.projeto.service.UsuarioService;
+import Biblioteca_ung.projeto.repository.UsuarioRepository; // Adicione esta importação
 
 @Controller
 @RequestMapping("/biblioteca/perfil")
 public class PerfilController {
 
     private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository; // Adicione o repositório
 
-    public PerfilController(UsuarioService usuarioService) {
+    public PerfilController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
         this.usuarioService = usuarioService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @GetMapping("/form")
@@ -33,6 +36,10 @@ public class PerfilController {
             BindingResult result,
             Model model) {
 
+        if (usuarioRepository.existsByEmail(perfilCadastroDTO.getEmail())) {
+            result.rejectValue("email", "error.perfilCadastroDTO", "Este e-mail já está em uso.");
+        }
+
         if (!perfilCadastroDTO.getSenha().equals(perfilCadastroDTO.getNovaSenha())) {
             result.rejectValue("novaSenha", "error.perfilCadastroDTO", "As senhas não coincidem");
         }
@@ -45,9 +52,10 @@ public class PerfilController {
         novoUsuario.setNome(perfilCadastroDTO.getNome());
         novoUsuario.setEmail(perfilCadastroDTO.getEmail());
         novoUsuario.setSenha(perfilCadastroDTO.getSenha());
+        novoUsuario.setCpf(perfilCadastroDTO.getCpf());
         novoUsuario.setRole(perfilCadastroDTO.getTipo().toUpperCase());
         usuarioService.salvar(novoUsuario);
 
-        return "redirect:/biblioteca/cadastro/login";
+        return "redirect:/login"; // Redireciona para a nova URL de login
     }
 }

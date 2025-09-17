@@ -17,7 +17,6 @@
             font-family: 'Poppins', sans-serif;
             display: flex;
             flex-direction: column;
-
         }
 
         .login-card {
@@ -70,7 +69,6 @@
         footer {
             background-color: #198754;
             margin-top: auto;
-            /* Verde biblioteca */
             color: #fff;
             padding: 15px 0;
             font-size: 0.9rem;
@@ -93,11 +91,15 @@
                     <p class="text-muted">Preencha suas informações pessoais</p>
                 </div>
 
-                <form th:action="@{/biblioteca/cadastro/salvar}" method="post">
+                <div th:if="${param.error}" class="alert alert-danger">
+                    Login ou senha incorretos.
+                </div>
+
+                <form th:action="@{/login}" method="post">
                     <div class="mb-3">
-                        <label for="login" class="form-label">Login</label>
-                        <input type="text" name="login" id="login" class="form-control" placeholder="Digite seu Login"
-                            required>
+                        <label for="username" class="form-label">E-mail</label>
+                        <input type="email" name="username" id="username" class="form-control"
+                            placeholder="Digite seu e-mail" required>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Senha</label>

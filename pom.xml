@@ -30,46 +30,50 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+
+		<!-- JPA -->
 		<dependency>
-			<!-- JPA -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+
+		<!-- Web -->
 		<dependency>
-			<!-- Web -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-			
+		<!-- Spring Boot DevTools -->
 		<dependency>
-			<!-- Spring Boot DevTools -->
       		<groupId>org.springframework.boot</groupId>
       		<artifactId>spring-boot-devtools</artifactId>
       		<scope>runtime</scope>
       		<optional>true</optional>
     	</dependency>
 
+		<!-- H2 Database-->
 		<dependency>
-		    <!-- H2 Database-->
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- PostgreSql-->
 		<dependency>
-			<!-- PostgreSql-->
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- Lombook -->
 		<dependency>
-			<!-- Lombook -->
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+
+		<!-- Spring Boot DevTools -->
 		<dependency>
-			<!-- Spring Boot DevTools -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -79,15 +83,15 @@
 		<dependency>
     		<groupId>org.springframework.boot</groupId>
    	    	<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		 	</dependency>
-		<dependency>
+		</dependency>
 
-	
+
+		<!-- Starter Web -->
+		<dependency>
    		    <groupId>org.springframework.boot</groupId>
   		    <artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 	
-<<<<<<< HEAD
 		<!-- Spring Security-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -99,16 +103,8 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-	</dependencies>	
-=======
-	 <!-- ... seus outros starters ... -->
-  		<dependency>
-   		 <groupId>org.springframework.boot</groupId>
-    		<artifactId>spring-boot-starter-validation</artifactId>
- 		 </dependency>
 	
 		</dependencies>	
->>>>>>> 5da2da5a6b73c1f4d33fbe675d36431c6a2170dd
 
 	<build>
 		<plugins>

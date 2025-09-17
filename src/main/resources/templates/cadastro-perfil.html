@@ -65,60 +65,69 @@
     <div class="form-card">
 
         <h3 class="text-center mb-4">Criar Perfil Completo</h3>
-        <form th:action="@{/biblioteca/perfil/salvar}" method="post">
+        <form th:action="@{/biblioteca/perfil/salvar}" th:object="${perfilCadastroDTO}" method="post">
 
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+                <p>Por favor, corrija os erros abaixo:</p>
+            </div>
 
-
-            <!-- Escolha do tipo de cadastro -->
             <div class="mb-3">
                 <label for="tipo" class="form-label">Você deseja se cadastrar como:</label>
-                <select name="tipo" id="tipo" class="form-select" required>
+                <select th:field="*{tipo}" id="tipo" class="form-select" required>
                     <option value="">-- Selecione --</option>
                     <option value="usuario">Usuário</option>
                     <option value="bibliotecario">Bibliotecário</option>
                 </select>
+                <div class="text-danger" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
             </div>
 
-            <!-- Campos extras que mudam -->
             <div id="extraUsuario" class="mb-3" style="display:none;">
                 <label for="carteirinha" class="form-label">Número da Carteirinha</label>
-                <input type="text" name="carteirinha" id="carteirinha" class="form-control"
+                <input type="text" th:field="*{carteirinha}" id="carteirinha" class="form-control"
                     placeholder="Digite o número da carteirinha">
+                <div class="text-danger" th:if="${#fields.hasErrors('carteirinha')}" th:errors="*{carteirinha}"></div>
             </div>
 
             <div id="extraBibliotecario" class="mb-3" style="display:none;">
                 <label for="registro" class="form-label">Registro do Conselho</label>
-                <input type="text" name="registro" id="registro" class="form-control"
+                <input type="text" th:field="*{registro}" id="registro" class="form-control"
                     placeholder="Digite seu registro profissional">
+                <div class="text-danger" th:if="${#fields.hasErrors('registro')}" th:errors="*{registro}"></div>
             </div>
 
-            <!-- Campos comuns -->
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
-                <input type="text" name="nome" id="nome" class="form-control" placeholder="Digite seu nome" required>
+                <input type="text" th:field="*{nome}" id="nome" class="form-control" placeholder="Digite seu nome"
+                    required>
+                <div class="text-danger" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail</label>
-                <input type="email" name="email" id="email" class="form-control" placeholder="Digite seu e-mail"
+                <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="Digite seu e-mail"
                     required>
+                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
             </div>
 
             <div class="mb-3">
                 <label for="senha" class="form-label">Senha</label>
-                <input type="password" name="senha" id="senha" class="form-control" placeholder="Digite sua senha"
-                    required>
+                <input type="password" th:field="*{senha}" id="senha" class="form-control"
+                    placeholder="Digite sua senha" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
             </div>
 
             <div class="mb-3">
                 <label for="novaSenha" class="form-label">Confirme a Senha</label>
-                <input type="password" name="novaSenha" id="novaSenha" class="form-control"
+                <input type="password" th:field="*{novaSenha}" id="novaSenha" class="form-control"
                     placeholder="Confirme sua senha" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('novaSenha')}" th:errors="*{novaSenha}"></div>
             </div>
 
             <div class="mb-3">
                 <label for="cpf" class="form-label">CPF</label>
-                <input type="text" name="cpf" id="cpf" class="form-control" placeholder="000.000.000-00" required>
+                <input type="text" th:field="*{cpf}" id="cpf" class="form-control" placeholder="000.000.000-00"
+                    required>
+                <div class="text-danger" th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></div>
             </div>
 
             <div class="d-grid">
@@ -127,7 +136,6 @@
         </form>
     </div>
 
-    <!-- Rodapé -->
     <footer>
         <p>© 2025 Biblioteca Comunitária - Todos os direitos reservados</p>
     </footer>
