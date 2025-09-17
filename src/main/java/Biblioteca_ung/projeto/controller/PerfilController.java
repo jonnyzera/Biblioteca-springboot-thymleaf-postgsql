@@ -30,7 +30,7 @@ public class PerfilController {
     @GetMapping("/form")
     public String mostrarFormulario(Model model) {
         model.addAttribute("perfilCadastroDTO", new PerfilCadastroDTO());
-        return "cadastro-perfil";
+        return "cadastro-biblioteca";
     }
 
     @PostMapping("/salvar")
