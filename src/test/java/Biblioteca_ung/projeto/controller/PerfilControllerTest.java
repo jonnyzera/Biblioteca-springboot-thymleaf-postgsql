@@ -85,7 +85,7 @@ public class PerfilControllerTest {
                 .flashAttr("perfilCadastroDTO", dto)
                 .with(csrf())) // CORREÇÃO: Adicionando token CSRF
                 .andExpect(status().isOk())
-                .andExpect(view().name("cadastro-perfil"))
+                .andExpect(view().name("cadastro-biblioteca"))
                 .andExpect(model().attributeHasFieldErrors("perfilCadastroDTO", "email"));
 
         verify(usuarioService, never()).salvar(any(Usuario.class));

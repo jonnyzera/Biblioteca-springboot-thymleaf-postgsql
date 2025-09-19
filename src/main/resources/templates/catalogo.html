@@ -203,8 +203,7 @@
                                 <div th:if="${livro.quantidadeDisponivel > 0}" class="d-grid mt-3">
                                     <form th:action="@{/biblioteca/emprestimo/emprestar}" method="post">
                                         <input type="hidden" name="livroId" th:value="${livro.id}" />
-                                        <input type="hidden" name="usuarioId"
-                                            th:value="${#authentication.principal.id}" />
+                                        <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
                                         <button type="submit" class="btn btn-success w-100">Emprestar</button>
                                     </form>
                                 </div>

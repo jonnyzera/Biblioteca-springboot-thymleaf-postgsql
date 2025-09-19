@@ -73,11 +73,14 @@ public class PerfilController {
             return "cadastro-biblioteca";
         }
 
+        // --- Mapeamento para o objeto Usuario ---
         Usuario novoUsuario = new Usuario();
         novoUsuario.setNome(perfilCadastroDTO.getNome());
         novoUsuario.setEmail(perfilCadastroDTO.getEmail());
         novoUsuario.setSenha(perfilCadastroDTO.getSenha());
         novoUsuario.setCpf(perfilCadastroDTO.getCpf());
+
+        // ESSENCIAL: Salva a Role correta ('USUARIO' ou 'BIBLIOTECARIO')s
         novoUsuario.setRole(perfilCadastroDTO.getTipo().toUpperCase());
         novoUsuario.setCarteirinha(perfilCadastroDTO.getCarteirinha());
         novoUsuario.setRegistro(perfilCadastroDTO.getRegistro());

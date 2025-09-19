@@ -124,12 +124,12 @@
                             <a class="nav-link dropdown-toggle text-white" href="#" role="button"
                                 id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle me-1"></i>
-                                <span th:text="${#authentication.name}">Nome do Usuário</span>
+                                <span th:text="${usuario.nome}">Nome do Usuário</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
                                 <li class="dropdown-header">
                                     <i class="bi bi-person-circle me-1"></i>
-                                    <span th:text="${#authentication.name}">Nome do Usuário</span>
+                                    <span th:text="${usuario.nome}">Nome do Usuário</span>
                                     <span class="badge rounded-pill bg-success ms-2"
                                         th:text="${userRole}">Usuário</span>
                                 </li>
@@ -167,7 +167,7 @@
                                         <hr class="dropdown-divider">
                                     </li>
                                 </div>
-                                <li><a class="dropdown-item" th:href="@{/perfil/editar}"><i
+                                <li><a class="dropdown-item" th:href="@{/biblioteca/perfil/editar}"><i
                                             class="bi bi-pencil-square me-2"></i>Editar Perfil</a></li>
                                 <li><a class="dropdown-item" th:href="@{/logout}"><i
                                             class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
