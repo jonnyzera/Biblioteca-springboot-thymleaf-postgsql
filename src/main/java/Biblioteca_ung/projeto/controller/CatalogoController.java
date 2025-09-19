@@ -5,7 +5,6 @@ import Biblioteca_ung.projeto.model.Usuario;
 import Biblioteca_ung.projeto.service.CustomUserDetails;
 import Biblioteca_ung.projeto.service.EmprestimoService;
 import Biblioteca_ung.projeto.service.LivroService;
-import Biblioteca_ung.projeto.service.UsuarioService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

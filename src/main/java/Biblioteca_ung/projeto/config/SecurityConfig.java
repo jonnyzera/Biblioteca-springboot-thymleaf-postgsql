@@ -21,11 +21,20 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .authorizeHttpRequests(authorize -> authorize
-                                                .requestMatchers("/", "/login", "/biblioteca/perfil/form", "/css/**",
+                                                .requestMatchers("/", "/login", "/biblioteca/perfil/form",
+                                                                "/biblioteca/perfil/salvar", "/css/**",
                                                                 "/js/**", "/imagens/**", "/catalogo")
                                                 .permitAll()
+
+                                                // REGRAS RESTRITIVAS MAIS ESPECÍFICAS PRIMEIRO
+                                                .requestMatchers("/biblioteca/livro/**").hasRole("BIBLIOTECARIO") // Bloqueia
+                                                                                                                  // com
+                                                                                                                  // 403
                                                 .requestMatchers("/bibliotecario/**").hasRole("BIBLIOTECARIO")
+
+                                                // REGRA CATCH-ALL
                                                 .anyRequest().authenticated())
+                                // ...
                                 .formLogin(form -> form
                                                 .loginPage("/login")
                                                 .loginProcessingUrl("/login")

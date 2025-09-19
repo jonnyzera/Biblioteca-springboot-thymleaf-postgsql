@@ -58,18 +58,15 @@
 </head>
 
 <body>
-    <a href="/biblioteca/cadastro/login" class="btn-voltar" title="Voltar para Login">
+    <a th:href="@{/login}" class="btn-voltar" title="Voltar para Login">
         <i class="bi bi-arrow-left-circle"></i>
     </a>
 
     <div class="form-card">
 
         <h3 class="text-center mb-4">Criar Perfil Completo</h3>
-        <form th:action="@{/biblioteca/perfil/salvar}" th:object="${perfilCadastroDTO}" method="post">
 
-            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
-                <p>Por favor, corrija os erros abaixo:</p>
-            </div>
+        <form th:action="@{/biblioteca/perfil/salvar}" th:object="${perfilCadastroDTO}" method="post">
 
             <div class="mb-3">
                 <label for="tipo" class="form-label">Você deseja se cadastrar como:</label>
@@ -113,16 +110,13 @@
                 <label for="senha" class="form-label">Senha</label>
                 <input type="password" th:field="*{senha}" id="senha" class="form-control"
                     placeholder="Digite sua senha" required>
-                <div class="text-danger" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
             </div>
 
             <div class="mb-3">
                 <label for="novaSenha" class="form-label">Confirme a Senha</label>
                 <input type="password" th:field="*{novaSenha}" id="novaSenha" class="form-control"
                     placeholder="Confirme sua senha" required>
-                <div class="text-danger" th:if="${#fields.hasErrors('novaSenha')}" th:errors="*{novaSenha}"></div>
             </div>
-
             <div class="mb-3">
                 <label for="cpf" class="form-label">CPF</label>
                 <input type="text" th:field="*{cpf}" id="cpf" class="form-control" placeholder="000.000.000-00"

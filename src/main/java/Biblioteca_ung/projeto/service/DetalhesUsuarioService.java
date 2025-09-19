@@ -1,8 +1,5 @@
 package Biblioteca_ung.projeto.service;
 
-import java.util.Collections;
-import java.util.List;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +19,11 @@ public class DetalhesUsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+
+        // CORREÇÃO: Força o e-mail para minúsculas antes de buscar no banco
+        String emailMinusculo = email.toLowerCase();
+
+        Usuario usuario = usuarioRepository.findByEmail(emailMinusculo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email));
 
         return new CustomUserDetails(usuario);

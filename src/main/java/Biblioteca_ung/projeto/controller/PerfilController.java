@@ -15,9 +15,16 @@ import Biblioteca_ung.projeto.service.CustomUserDetails;
 import Biblioteca_ung.projeto.service.UsuarioService;
 import Biblioteca_ung.projeto.repository.UsuarioRepository;
 
+// IMPORTS CRÍTICOS PARA LOG E TRATAMENTO DE ERRO
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+
 @Controller
 @RequestMapping("/biblioteca/perfil")
 public class PerfilController {
+
+    private static final Logger logger = LoggerFactory.getLogger(PerfilController.class);
 
     private final UsuarioService usuarioService;
     private final UsuarioRepository usuarioRepository;
@@ -38,16 +45,32 @@ public class PerfilController {
             BindingResult result,
             Model model) {
 
-        if (usuarioRepository.existsByEmail(perfilCadastroDTO.getEmail())) {
-            result.rejectValue("email", "error.perfilCadastroDTO", "Este e-mail já está em uso.");
+        // --- VALIDAÇÕES DEFENSIVAS E DE UNICIDADE ---
+
+        // 1. Validação manual para cobrir a falha do @Size na Senha (min 6 caracteres)
+        if (perfilCadastroDTO.getSenha() != null && perfilCadastroDTO.getSenha().length() < 6) {
+            result.rejectValue("senha", "error.perfilCadastroDTO", "A senha deve ter no mínimo 6 caracteres");
         }
 
+        // 2. Validação de Confirmação de Senha
         if (!perfilCadastroDTO.getSenha().equals(perfilCadastroDTO.getNovaSenha())) {
             result.rejectValue("novaSenha", "error.perfilCadastroDTO", "As senhas não coincidem");
         }
 
+        // 3. Validação de Email Duplicado
+        if (usuarioRepository.existsByEmail(perfilCadastroDTO.getEmail())) {
+            result.rejectValue("email", "error.perfilCadastroDTO", "Este e-mail já está em uso.");
+        }
+
+        // 4. Validação de CPF Duplicado
+        if (usuarioRepository.existsByCpf(perfilCadastroDTO.getCpf())) {
+            result.rejectValue("cpf", "error.perfilCadastroDTO", "Este CPF já está em uso.");
+        }
+
+        // Se houver erros de validação (incluindo o formato de CPF/Senha)
         if (result.hasErrors()) {
-            return "cadastro-perfil";
+            model.addAttribute("perfilCadastroDTO", perfilCadastroDTO);
+            return "cadastro-biblioteca";
         }
 
         Usuario novoUsuario = new Usuario();
@@ -59,9 +82,25 @@ public class PerfilController {
         novoUsuario.setCarteirinha(perfilCadastroDTO.getCarteirinha());
         novoUsuario.setRegistro(perfilCadastroDTO.getRegistro());
 
-        usuarioService.salvar(novoUsuario);
-
-        return "redirect:/login";
+        // --- CORREÇÃO CRÍTICA: TRY-CATCH para capturar a falha silenciosa do JPA ---
+        try {
+            usuarioService.salvar(novoUsuario);
+            return "redirect:/login"; // SUCESSO
+        } catch (DataIntegrityViolationException e) {
+            // Captura falhas de unicidade/integridade do banco
+            logger.error("ERRO DE INTEGRIDADE DE DADOS: CPF ou Email já cadastrado ou formato inválido.", e);
+            result.rejectValue("cpf", "error.perfilCadastroDTO", "CPF ou E-mail já cadastrado, ou formato inválido.");
+            model.addAttribute("perfilCadastroDTO", perfilCadastroDTO);
+            return "cadastro-biblioteca"; // ERRO
+        } catch (Exception e) {
+            // Captura qualquer outro erro de persistência (como formato de campo que o JPA
+            // não aceita)
+            logger.error("ERRO CRÍTICO DE PERSISTÊNCIA: Falha ao salvar usuário no banco de dados.", e);
+            model.addAttribute("salvarError",
+                    "Erro interno: Falha ao completar o cadastro. Verifique se o CPF está no formato 000.000.000-00.");
+            model.addAttribute("perfilCadastroDTO", perfilCadastroDTO);
+            return "cadastro-biblioteca"; // ERRO
+        }
     }
 
     @GetMapping("/editar")

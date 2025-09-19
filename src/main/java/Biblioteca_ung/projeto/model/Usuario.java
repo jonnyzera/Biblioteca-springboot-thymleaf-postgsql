@@ -21,7 +21,7 @@ public class Usuario {
     @Column(nullable = false)
     private String senha;
 
-    @Column(unique = true, nullable = false, length = 14)
+    @Column(unique = true, nullable = false)
     private String cpf;
 
     private String role;
