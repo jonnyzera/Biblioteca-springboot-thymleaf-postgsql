@@ -1,6 +1,7 @@
 package Biblioteca_ung.projeto.controller;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,10 @@ import Biblioteca_ung.projeto.service.CustomUserDetails;
 import Biblioteca_ung.projeto.service.UsuarioService;
 import Biblioteca_ung.projeto.repository.UsuarioRepository;
 
+// NOVOS IMPORTS
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 // IMPORTS CRÍTICOS PARA LOG E TRATAMENTO DE ERRO
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +33,14 @@ public class PerfilController {
 
     private final UsuarioService usuarioService;
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public PerfilController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
+    // CONSTRUTOR: Injeta PasswordEncoder
+    public PerfilController(UsuarioService usuarioService, UsuarioRepository usuarioRepository,
+            PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/form")
@@ -47,24 +56,91 @@ public class PerfilController {
 
         // --- VALIDAÇÕES DEFENSIVAS E DE UNICIDADE ---
 
-        // 1. Validação manual para cobrir a falha do @Size na Senha (min 6 caracteres)
-        if (perfilCadastroDTO.getSenha() != null && perfilCadastroDTO.getSenha().length() < 6) {
-            result.rejectValue("senha", "error.perfilCadastroDTO", "A senha deve ter no mínimo 6 caracteres");
-        }
-
-        // 2. Validação de Confirmação de Senha
+        // 1. Validação de Confirmação de Senha
         if (!perfilCadastroDTO.getSenha().equals(perfilCadastroDTO.getNovaSenha())) {
             result.rejectValue("novaSenha", "error.perfilCadastroDTO", "As senhas não coincidem");
         }
 
-        // 3. Validação de Email Duplicado
+        // 2. Validação de Email Duplicado
         if (usuarioRepository.existsByEmail(perfilCadastroDTO.getEmail())) {
             result.rejectValue("email", "error.perfilCadastroDTO", "Este e-mail já está em uso.");
         }
 
-        // 4. Validação de CPF Duplicado
+        // 3. Validação de CPF Duplicado
         if (usuarioRepository.existsByCpf(perfilCadastroDTO.getCpf())) {
             result.rejectValue("cpf", "error.perfilCadastroDTO", "Este CPF já está em uso.");
+        }
+
+        // 4. NOVA VALIDAÇÃO: CONFLITO ENTRE CARTEIRINHA E REGISTRO
+        String nomeCompleto = perfilCadastroDTO.getNome().trim();
+        // Verifica se há pelo menos um espaço (o que implica nome e sobrenome)
+        if (!nomeCompleto.contains(" ") || nomeCompleto.split("\\s+").length < 2) {
+            result.rejectValue("nome", "error.perfilCadastroDTO",
+                    "Por favor, digite seu nome completo (nome e sobrenome).");
+        }
+
+        // 5. VALIDAÇÃO: UNICIDADE COMPLETA DOS CAMPOS DE IDENTIFICAÇÃO
+
+        // 5a. Valida Carteirinha (se for usuário)
+        if (perfilCadastroDTO.getTipo().equalsIgnoreCase("usuario") &&
+                perfilCadastroDTO.getCarteirinha() != null &&
+                !perfilCadastroDTO.getCarteirinha().isBlank()) {
+
+            String numCarteirinha = perfilCadastroDTO.getCarteirinha();
+
+            // Check 1: Conflito com outras Carteirinhas existentes (Unicidade interna)
+            if (usuarioRepository.existsByCarteirinha(numCarteirinha)) {
+                result.rejectValue("carteirinha", "error.perfilCadastroDTO",
+                        "Este número de carteirinha já está em uso por outro usuário.");
+            }
+            // Check 2: Conflito com Registros de Bibliotecário (Unicidade cruzada)
+            if (usuarioRepository.existsByRegistro(numCarteirinha)) {
+                result.rejectValue("carteirinha", "error.perfilCadastroDTO",
+                        "Este número de carteirinha é idêntico a um Registro de Bibliotecário já cadastrado.");
+            }
+        }
+
+        // 5b. Valida Registro (se for bibliotecário)
+        if (perfilCadastroDTO.getTipo().equalsIgnoreCase("bibliotecario") &&
+                perfilCadastroDTO.getRegistro() != null &&
+                !perfilCadastroDTO.getRegistro().isBlank()) {
+
+            String numRegistro = perfilCadastroDTO.getRegistro();
+
+            // Check 1: Conflito com outros Registros existentes (Unicidade interna)
+            if (usuarioRepository.existsByRegistro(numRegistro)) {
+                result.rejectValue("registro", "error.perfilCadastroDTO",
+                        "Este número de registro já está em uso por outro bibliotecário.");
+            }
+            // Check 2: Conflito com Carteirinhas de Usuário (Unicidade cruzada)
+            if (usuarioRepository.existsByCarteirinha(numRegistro)) {
+                result.rejectValue("registro", "error.perfilCadastroDTO",
+                        "Este número de registro é idêntico a uma Carteirinha de Usuário já cadastrada.");
+            }
+        }
+
+        // Se for USUÁRIO: verifica se a carteirinha conflita com um Registro de
+        // Bibliotecário
+        if (perfilCadastroDTO.getTipo().equalsIgnoreCase("usuario") &&
+                perfilCadastroDTO.getCarteirinha() != null &&
+                !perfilCadastroDTO.getCarteirinha().isBlank()) {
+
+            if (usuarioRepository.existsByRegistro(perfilCadastroDTO.getCarteirinha())) {
+                result.rejectValue("carteirinha", "error.perfilCadastroDTO",
+                        "Este número de carteirinha é idêntico a um Registro de Bibliotecário já cadastrado.");
+            }
+        }
+
+        // Se for BIBLIOTECÁRIO: verifica se o registro conflita com uma Carteirinha de
+        // Usuário
+        if (perfilCadastroDTO.getTipo().equalsIgnoreCase("bibliotecario") &&
+                perfilCadastroDTO.getRegistro() != null &&
+                !perfilCadastroDTO.getRegistro().isBlank()) {
+
+            if (usuarioRepository.existsByCarteirinha(perfilCadastroDTO.getRegistro())) {
+                result.rejectValue("registro", "error.perfilCadastroDTO",
+                        "Este número de registro é idêntico a uma Carteirinha de Usuário já cadastrada.");
+            }
         }
 
         // Se houver erros de validação (incluindo o formato de CPF/Senha)
@@ -116,12 +192,39 @@ public class PerfilController {
     }
 
     @PostMapping("/salvar-edicao")
-    public String salvarEdicaoPerfil(@ModelAttribute("usuario") Usuario usuarioAtualizado,
-            Authentication authentication) {
-        // Acessa o objeto Usuario diretamente do principal
+    public String salvarEdicaoPerfil(
+            @ModelAttribute("usuario") Usuario usuarioAtualizado,
+            @RequestParam(value = "novaSenha", required = false) String novaSenha,
+            @RequestParam(value = "confirmaNovaSenha", required = false) String confirmaNovaSenha,
+            Authentication authentication,
+            RedirectAttributes ra) {
+
         Usuario usuarioOriginal = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
 
-        usuarioOriginal.setEmail(usuarioAtualizado.getEmail());
+        // 1. Lógica de Alteração de Senha (Validação e Criptografia)
+        if (novaSenha != null && !novaSenha.isBlank()) {
+            if (!novaSenha.equals(confirmaNovaSenha)) {
+                ra.addFlashAttribute("erro", "As novas senhas não coincidem.");
+                return "redirect:/biblioteca/perfil/editar";
+            }
+            if (novaSenha.length() < 6) {
+                ra.addFlashAttribute("erro", "A nova senha deve ter no mínimo 6 caracteres.");
+                return "redirect:/biblioteca/perfil/editar";
+            }
+
+            // CORREÇÃO: Criptografa a nova senha e a define no objeto
+            String novoHash = passwordEncoder.encode(novaSenha);
+            usuarioOriginal.setSenha(novoHash);
+        }
+        // Se a senha não foi alterada, a senha hash ORIGINAL (do objeto
+        // usuarioOriginal)
+        // é mantida e será salva pelo service sem re-criptografia.
+
+        // 2. Atualizar campos não-senha
+        // Garante que o e-mail seja minúsculo para consistência no login
+        usuarioOriginal.setEmail(usuarioAtualizado.getEmail().toLowerCase());
+
+        // Atualiza os campos que o usuário pode editar no perfil
         usuarioOriginal.setTelefone(usuarioAtualizado.getTelefone());
         usuarioOriginal.setEndereco(usuarioAtualizado.getEndereco());
         usuarioOriginal.setUrlFoto(usuarioAtualizado.getUrlFoto());
@@ -129,7 +232,23 @@ public class PerfilController {
         usuarioOriginal.setCarteirinha(usuarioAtualizado.getCarteirinha());
         usuarioOriginal.setRegistro(usuarioAtualizado.getRegistro());
 
-        usuarioService.salvar(usuarioOriginal);
+        try {
+            // O UsuarioService (corrigido no passo anterior) salvará o objeto corretamente.
+            usuarioService.salvar(usuarioOriginal);
+            ra.addFlashAttribute("sucesso", "Perfil atualizado com sucesso!");
+        } catch (DataIntegrityViolationException e) {
+            // Captura falhas de unicidade/integridade (ex: Email/CPF duplicado) e
+            // redireciona com erro
+            logger.error("ERRO DE INTEGRIDADE DE DADOS ao atualizar perfil: {}", usuarioOriginal.getEmail(), e);
+            ra.addFlashAttribute("erro",
+                    "Erro: Este e-mail ou CPF já está em uso por outro usuário ou o formato é inválido.");
+            return "redirect:/biblioteca/perfil/editar";
+        } catch (Exception e) {
+            // Captura qualquer outro erro inesperado e redireciona com erro
+            logger.error("ERRO GENÉRICO ao salvar edição de perfil para {}", usuarioOriginal.getEmail(), e);
+            ra.addFlashAttribute("erro", "Erro interno ao salvar perfil: " + e.getMessage());
+            return "redirect:/biblioteca/perfil/editar";
+        }
 
         return "redirect:/catalogo";
     }

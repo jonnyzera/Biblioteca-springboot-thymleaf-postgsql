@@ -35,7 +35,7 @@ public class CatalogoController {
             Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
             model.addAttribute("usuario", usuario);
             model.addAttribute("userRole", usuario.getRole());
-            model.addAttribute("emprestimos", emprestimoService.listarTodos());
+            model.addAttribute("emprestimos", emprestimoService.listarPorUsuario(usuario));
         }
 
         model.addAttribute("livros", livroService.listarTodos());

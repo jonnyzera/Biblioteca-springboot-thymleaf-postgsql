@@ -28,6 +28,11 @@ public class EmprestimoService {
         return emprestimoRepository.findAll();
     }
 
+    /* Método novo adicionado empréstimo usuario único */
+    public List<Emprestimo> listarPorUsuario(Usuario usuario) {
+        return emprestimoRepository.findByUsuario(usuario);
+    }
+
     public Emprestimo salvar(Emprestimo emprestimo) {
         return emprestimoRepository.save(emprestimo);
     }

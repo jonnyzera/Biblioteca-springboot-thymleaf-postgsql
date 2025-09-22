@@ -31,7 +31,14 @@ public class UsuarioService {
         // CORREÇÃO: Força o e-mail para minúsculas antes de salvar
         usuario.setEmail(usuario.getEmail().toLowerCase());
 
-        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        // CORREÇÃO CRÍTICA: Criptografa a senha SOMENTE se for um NOVO USUÁRIO (ID
+        // nulo).
+        // Se for update (ID não nulo), a senha (hash ou texto puro) deve ser tratada no
+        // Controller.
+        if (usuario.getId() == null) {
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        }
+
         return repository.save(usuario);
     }
 
