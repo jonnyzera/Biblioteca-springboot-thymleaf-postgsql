@@ -23,7 +23,36 @@ Este projeto é um sistema simples de gerenciamento de biblioteca desenvolvido c
 
 ## 📦 Estrutura do Projeto
 
-Biblioteca_ung.projeto/ ├── controller/ │ ├── LivroController.java │ ├── UsuarioController.java │ └── EmprestimoController.java ├── model/ │ ├── Livro.java │ ├── Usuario.java │ └── Emprestimo.java ├── repository/ │ ├── LivroRepository.java │ ├── UsuarioRepository.java │ └── EmprestimoRepository.java ├── service/ │ ├── LivroService.java │ ├── UsuarioService.java │ └── EmprestimoService.java └── resources/ ├── templates/ │ └── biblioteca.html └── application.properties
+Biblioteca_ung.projeto/ 
+├── controller/
+│ ├── LivroController.java
+│ ├── UsuarioController.java
+│ ├── EmprestimoController.java 
+│ ├── PerfilController.java
+│ ├── BibliotecarioController.java
+│ └── CatalogoController.java
+├── model/
+│ ├── Livro.java
+│ ├── Usuario.java
+│ └── Emprestimo.java
+├── repository/
+│ ├── LivroRepository.java
+│ ├── UsuarioRepository.java
+│ └── EmprestimoRepository.java
+├── service/
+│ ├── LivroService.java
+│ ├── UsuarioService.java
+│ └── EmprestimoService.java
+└── resources/
+  ├── templates/
+  │ ├── biblioteca.html
+  │ ├── bibliotecario.html
+  │ ├── catalogo.html
+  │ ├── cadastro-biblioteca.html
+  │ ├── perfil.html
+  │ ├── emprestimos-usuario.html
+  │ └── login-biblioteca.html
+  └── application.properties
 
 ## ⚙️ Configuração do Banco de Dados
 
