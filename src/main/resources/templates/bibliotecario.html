@@ -183,6 +183,15 @@
         <h1 class="mb-4"><i class="bi bi-person-gear me-2"></i>Painel do Bibliotecário</h1>
         <hr>
 
+        <div th:if="${sucesso}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${sucesso}">Ação realizada com sucesso!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${erro}">Ocorreu um erro.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
         <section class="mt-5">
             <h2 class="mb-4">Gerenciamento de Livros</h2>
             <div class="card form-card mb-4">
@@ -277,13 +286,14 @@
                                 </td>
                                 <td th:text="${livro.quantidadeDisponivel}"></td>
                                 <td>
-                                    <a href="#" class="btn btn-green-icon me-2" data-bs-toggle="tooltip"
+                                    <a href="#" class="btn btn-green-icon me-2" data-bs-toggle="modal"
+                                        data-bs-target="#modalEditarLivro" th:attr="data-id=${livro.id}"
                                         title="Editar Livro">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <form th:action="@{/biblioteca/livro/{id}(id=${livro.id})}" method="post"
+                                    <form th:action="@{/biblioteca/livro/deletar}" method="post"
                                         style="display:inline;">
-                                        <input type="hidden" name="_method" value="delete" />
+                                        <input type="hidden" name="id" th:value="${livro.id}" />
                                         <button type="submit" class="btn btn-danger btn-sm"
                                             onclick="return confirm('Tem certeza que deseja deletar este livro?');"
                                             data-bs-toggle="tooltip" title="Deletar Livro">
@@ -366,6 +376,57 @@
     </footer>
 
 
+    <div class="modal fade" id="modalEditarLivro" tabindex="-1" aria-labelledby="modalEditarLivroLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarLivroLabel">Editar Livro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/biblioteca/livro/salvar}" method="post">
+                        <input type="hidden" id="editLivroId" name="id" value="">
+                        <div class="mb-3">
+                            <label for="editTitulo" class="form-label">Título</label>
+                            <input type="text" id="editTitulo" name="titulo" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAutor" class="form-label">Autor</label>
+                            <input type="text" id="editAutor" name="autor" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAnoPublicacao" class="form-label">Ano de Publicação</label>
+                            <input type="number" id="editAnoPublicacao" name="anoPublicacao" class="form-control"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategoria" class="form-label">Categoria</label>
+                            <input type="text" id="editCategoria" name="categoria" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDescricao" class="form-label">Descrição</label>
+                            <textarea id="editDescricao" name="descricao" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editQuantidadeDisponivel" class="form-label">Quantidade Disponível</label>
+                            <input type="number" id="editQuantidadeDisponivel" name="quantidadeDisponivel"
+                                class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUrlCapa" class="form-label">URL da Capa</label>
+                            <input type="text" id="editUrlCapa" name="urlCapa" class="form-control">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -428,6 +489,46 @@
                     previewCapaUpload.src = '#';
                     previewCapaUpload.style.display = 'none';
                 }
+            });
+
+            // Lógica para preencher o modal de edição
+            const modalEditarLivro = document.getElementById('modalEditarLivro');
+            modalEditarLivro.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const livroId = button.getAttribute('data-id');
+
+                fetch(`/biblioteca/livro/detalhes/${livroId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao buscar detalhes do livro');
+                        }
+                        return response.json();
+                    })
+                    .then(livro => {
+                        const modalTitle = modalEditarLivro.querySelector('.modal-title');
+                        const modalBodyInputId = modalEditarLivro.querySelector('#editLivroId');
+                        const modalBodyInputTitulo = modalEditarLivro.querySelector('#editTitulo');
+                        const modalBodyInputAutor = modalEditarLivro.querySelector('#editAutor');
+                        const modalBodyInputAno = modalEditarLivro.querySelector('#editAnoPublicacao');
+                        const modalBodyInputCategoria = modalEditarLivro.querySelector('#editCategoria');
+                        const modalBodyTextareaDescricao = modalEditarLivro.querySelector('#editDescricao');
+                        const modalBodyInputQuantidade = modalEditarLivro.querySelector('#editQuantidadeDisponivel');
+                        const modalBodyInputUrlCapa = modalEditarLivro.querySelector('#editUrlCapa');
+
+                        modalTitle.textContent = 'Editar Livro: ' + livro.titulo;
+                        modalBodyInputId.value = livro.id;
+                        modalBodyInputTitulo.value = livro.titulo;
+                        modalBodyInputAutor.value = livro.autor;
+                        modalBodyInputAno.value = livro.anoPublicacao;
+                        modalBodyInputCategoria.value = livro.categoria;
+                        modalBodyTextareaDescricao.value = livro.descricao;
+                        modalBodyInputQuantidade.value = livro.quantidadeDisponivel;
+                        modalBodyInputUrlCapa.value = livro.urlCapa;
+                    })
+                    .catch(error => {
+                        console.error('Falha ao carregar os dados do livro:', error);
+                        alert('Não foi possível carregar os dados do livro para edição.');
+                    });
             });
         }, false);
     </script>

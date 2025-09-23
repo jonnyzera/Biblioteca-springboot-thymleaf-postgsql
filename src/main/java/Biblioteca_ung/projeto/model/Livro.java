@@ -14,10 +14,12 @@ public class Livro {
     private String autor;
     private Integer anoPublicacao;
     private String categoria;
+
+    @Column(columnDefinition = "TEXT")
     private String descricao;
+
     private String urlCapa;
 
-    // A lógica de disponibilidade agora é baseada na quantidade
     private Integer quantidadeDisponivel;
 
     public boolean isDisponivel() {
