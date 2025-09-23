@@ -31,11 +31,10 @@ public class SecurityConfig {
                                                 .permitAll()
 
                                                 // REGRAS RESTRITIVAS
+                                                .requestMatchers("/biblioteca/livro/detalhes/{id}").authenticated()
                                                 .requestMatchers("/biblioteca/livro/**").hasRole("BIBLIOTECARIO")
 
                                                 // AGORA O ACESSO AO /bibliotecario É CONTROLADO NO CONTROLLER
-
-                                                // REGRA CATCH-ALL
                                                 .anyRequest().authenticated())
                                 // ...
                                 .formLogin(form -> form

@@ -497,7 +497,8 @@
                 const button = event.relatedTarget;
                 const livroId = button.getAttribute('data-id');
 
-                fetch(`/biblioteca/livro/detalhes/${livroId}`)
+                // CORRIGIDO: A URL da chamada fetch deve ser para o endpoint da API, não da página HTML
+                fetch(`/biblioteca/livro/detalhes-api/${livroId}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Erro ao buscar detalhes do livro');

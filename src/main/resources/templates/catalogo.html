@@ -190,11 +190,6 @@
                                             class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
                             </ul>
                         </div>
-                        <!--
-                        <div sec:authorize="!isAuthenticated()">
-                            <a class="btn btn-outline-light" th:href="@{/login}">Login</a>
-                        </div>
-                        -->
                     </div>
                 </div>
             </div>
@@ -216,40 +211,84 @@
         <h1 class="mb-4">📚 Catálogo de Livros</h1>
         <hr>
 
+        <div th:if="${not #lists.isEmpty(livrosPopulares)}">
+            <h2 class="mt-5 mb-4">✨ Mais Populares</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col" th:each="livro : ${livrosPopulares}">
+                    <a th:href="@{/biblioteca/livro/detalhes/{id}(id=${livro.id})}"
+                        style="text-decoration:none; color:inherit;">
+                        <div class="card book-card">
+                            <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
+                                class="card-img-top" th:alt="'Capa de ' + ${livro.titulo}">
+                            <div class="card-body book-details">
+                                <div>
+                                    <h5 class="card-title" th:text="${livro.titulo}">Título do Livro</h5>
+                                    <p class="card-text text-muted mb-1"><small th:text="${livro.autor}">Autor</small>
+                                    </p>
+                                    <p class="card-text text-muted"><small
+                                            th:text="'Ano: ' + ${livro.anoPublicacao}">Ano: 2025</small></p>
+                                    <p class="card-text"><span class="badge bg-secondary"
+                                            th:text="${livro.categoria}">Categoria</span></p>
+                                </div>
+                                <div class="mt-auto">
+                                    <span th:if="${livro.quantidadeDisponivel > 0}"
+                                        class="badge bg-success status-badge">Disponível (<span
+                                            th:text="${livro.quantidadeDisponivel}"></span>)</span>
+                                    <span th:unless="${livro.quantidadeDisponivel > 0}"
+                                        class="badge bg-danger status-badge">Emprestado</span>
+                                    <div th:if="${livro.quantidadeDisponivel > 0}" class="d-grid mt-3">
+                                        <form th:action="@{/biblioteca/emprestimo/emprestar}" method="post">
+                                            <input type="hidden" name="livroId" th:value="${livro.id}" />
+                                            <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
+                                            <button type="submit" class="btn btn-success w-100">Emprestar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <div th:each="categoria : ${categorias}">
             <h2 class="mt-5 mb-4" th:text="${categoria}">Categoria do Livro</h2>
             <div class="row row-cols-1 row-cols-md-3 g-4">
 
                 <div class="col" th:each="livro : ${livros}" th:if="${livro.categoria == categoria}">
-                    <div class="card book-card" data-bs-toggle="tooltip" data-bs-placement="top"
-                        th:title="${livro.descricao}">
-                        <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
-                            class="card-img-top" th:alt="'Capa de ' + ${livro.titulo}">
-                        <div class="card-body book-details">
-                            <div>
-                                <h5 class="card-title" th:text="${livro.titulo}">Título do Livro</h5>
-                                <p class="card-text text-muted mb-1"><small th:text="${livro.autor}">Autor</small></p>
-                                <p class="card-text text-muted"><small th:text="'Ano: ' + ${livro.anoPublicacao}">Ano:
-                                        2025</small></p>
-                                <p class="card-text"><span class="badge bg-secondary"
-                                        th:text="${livro.categoria}">Categoria</span></p>
-                            </div>
-                            <div class="mt-auto">
-                                <span th:if="${livro.quantidadeDisponivel > 0}"
-                                    class="badge bg-success status-badge">Disponível (<span
-                                        th:text="${livro.quantidadeDisponivel}"></span>)</span>
-                                <span th:unless="${livro.quantidadeDisponivel > 0}"
-                                    class="badge bg-danger status-badge">Emprestado</span>
-                                <div th:if="${livro.quantidadeDisponivel > 0}" class="d-grid mt-3">
-                                    <form th:action="@{/biblioteca/emprestimo/emprestar}" method="post">
-                                        <input type="hidden" name="livroId" th:value="${livro.id}" />
-                                        <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
-                                        <button type="submit" class="btn btn-success w-100">Emprestar</button>
-                                    </form>
+                    <a th:href="@{/biblioteca/livro/detalhes/{id}(id=${livro.id})}"
+                        style="text-decoration:none; color:inherit;">
+                        <div class="card book-card">
+                            <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
+                                class="card-img-top" th:alt="'Capa de ' + ${livro.titulo}">
+                            <div class="card-body book-details">
+                                <div>
+                                    <h5 class="card-title" th:text="${livro.titulo}">Título do Livro</h5>
+                                    <p class="card-text text-muted mb-1"><small th:text="${livro.autor}">Autor</small>
+                                    </p>
+                                    <p class="card-text text-muted"><small
+                                            th:text="'Ano: ' + ${livro.anoPublicacao}">Ano:
+                                            2025</small></p>
+                                    <p class="card-text"><span class="badge bg-secondary"
+                                            th:text="${livro.categoria}">Categoria</span></p>
+                                </div>
+                                <div class="mt-auto">
+                                    <span th:if="${livro.quantidadeDisponivel > 0}"
+                                        class="badge bg-success status-badge">Disponível (<span
+                                            th:text="${livro.quantidadeDisponivel}"></span>)</span>
+                                    <span th:unless="${livro.quantidadeDisponivel > 0}"
+                                        class="badge bg-danger status-badge">Emprestado</span>
+                                    <div th:if="${livro.quantidadeDisponivel > 0}" class="d-grid mt-3">
+                                        <form th:action="@{/biblioteca/emprestimo/emprestar}" method="post">
+                                            <input type="hidden" name="livroId" th:value="${livro.id}" />
+                                            <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
+                                            <button type="submit" class="btn btn-success w-100">Emprestar</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>

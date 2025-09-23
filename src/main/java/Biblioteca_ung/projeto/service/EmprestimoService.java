@@ -28,9 +28,13 @@ public class EmprestimoService {
         return emprestimoRepository.findAll();
     }
 
-    /* Método novo adicionado empréstimo usuario único */
     public List<Emprestimo> listarPorUsuario(Usuario usuario) {
         return emprestimoRepository.findByUsuario(usuario);
+    }
+
+    // NOVO MÉTODO: Chama o método do repositório para listar os livros populares
+    public List<Livro> listarLivrosPopulares(int limite) {
+        return emprestimoRepository.findTopLivrosMaisEmprestados();
     }
 
     public Emprestimo salvar(Emprestimo emprestimo) {

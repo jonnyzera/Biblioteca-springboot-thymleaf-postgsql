@@ -45,6 +45,9 @@ public class CatalogoController {
                 .collect(Collectors.toList());
         model.addAttribute("categorias", categorias);
 
+        // NOVO: Adiciona a lista de livros populares ao modelo
+        model.addAttribute("livrosPopulares", emprestimoService.listarLivrosPopulares(5));
+
         return "catalogo";
     }
 }

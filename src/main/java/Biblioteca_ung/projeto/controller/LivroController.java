@@ -2,6 +2,7 @@ package Biblioteca_ung.projeto.controller;
 
 import Biblioteca_ung.projeto.model.Livro;
 import Biblioteca_ung.projeto.service.LivroService;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,16 +20,20 @@ public class LivroController {
         this.livroService = livroService;
     }
 
-    @GetMapping("/editar/{id}")
-    public String editarLivro(@PathVariable Long id, Model model) {
+    // NOVO MÉTODO: Exibe a página de detalhes de um único livro
+    @GetMapping("/detalhes/{id}")
+    public String exibirDetalhesLivro(@PathVariable Long id, Model model) {
         Livro livro = livroService.buscarPorId(id);
         if (livro != null) {
-            model.addAttribute("livroEdicao", livro);
+            model.addAttribute("livro", livro);
+            return "livro-detalhes"; // Retorna o nome do novo template
         }
-        return "bibliotecario";
+        // Se o livro não for encontrado, redireciona para o catálogo com erro
+        return "redirect:/catalogo?erro=Livro não encontrado.";
     }
 
-    @GetMapping("/detalhes/{id}")
+    // Endpoint para buscar um livro por ID e retornar como JSON
+    @GetMapping("/detalhes-api/{id}")
     @ResponseBody
     public Livro getLivroDetalhes(@PathVariable Long id) {
         return livroService.buscarPorId(id);

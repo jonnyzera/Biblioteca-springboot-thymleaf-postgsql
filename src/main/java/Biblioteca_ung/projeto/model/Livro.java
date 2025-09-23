@@ -2,6 +2,7 @@ package Biblioteca_ung.projeto.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.List;
 
 @Data
 @Entity
@@ -19,6 +20,9 @@ public class Livro {
     private String descricao;
 
     private String urlCapa;
+
+    @ElementCollection
+    private List<String> urlsImagensAdicionais;
 
     private Integer quantidadeDisponivel;
 
