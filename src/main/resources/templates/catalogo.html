@@ -3,26 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Catálogo de Livros</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - Biblioteca Moderna</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Creepster&family=Metal+Mania&family=Dancing+Script&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Cinzel&family=Lora:ital,wght@0,400..700;1,400..700&family=Open+Sans:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap"
         rel="stylesheet">
-
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f4f8;
-            display: flex;
-            min-height: 100vh;
-            flex-direction: column;
+        :root {
+            --primary-bg: #F9F9F9;
+            --secondary-bg: #FFFFFF;
+            --dark-bg: #212529;
+            --primary-green: #198754;
+            --dark-text: #343a40;
+            --light-text: #f8f9fa;
         }
 
-        main {
-            flex: 1;
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
         }
 
         .navbar {
@@ -45,65 +53,249 @@
             font-weight: bold;
         }
 
-        .book-card {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(to right, rgba(148, 15, 137, 0.7), rgba(33, 37, 41, 0.7)), url('https://images.unsplash.com/photo-1549611090-f0c33a2b7218?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+            height: 80vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-title {
+            font-family: 'Lora', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+
+        /* Category Cards Section */
+        .category-section {
+            padding: 50px 0;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+        }
+
+        .category-card {
+            min-height: 180px;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s ease;
+        }
+
+        .category-card:hover .category-card-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .category-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .category-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        .category-ficcao {
+            background-image: url('https://images.unsplash.com/photo-1544947953-30c1737e8c3b?q=80&w=1920&auto=format&fit=crop');
+        }
+
+        .category-fantasia {
+            background-image: url('https://images.unsplash.com/photo-1577907579998-294b0c749b5c?q=80&w=1920&auto=format&fit=crop');
+        }
+
+        .category-manga {
+            background-image: url('https://images.unsplash.com/photo-1563638423403-12563f46f41e?q=80&w=1920&auto=format&fit=crop');
+        }
+
+        .category-hq {
+            background-image: url('https://images.unsplash.com/photo-1533038622119-a1b7e4112e5c?q=80&w=1920&auto=format&fit=crop');
+        }
+
+        /* Book Cards */
+        .book-card {
+            border: none;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            height: 100%;
+            background-color: var(--secondary-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .book-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .card-img-top {
-            width: 100%;
-            height: 250px;
+        .book-card-img {
+            height: 300px;
             object-fit: cover;
+            width: 100%;
         }
 
-        .dropdown-item i {
-            width: 20px;
+        .card-body {
+            padding: 1.25rem;
         }
 
-        .footer {
-            background-color: #343a40;
-            color: white;
+        .book-title {
+            font-weight: 600;
+            font-size: 1.1rem;
         }
 
-        .footer a {
-            color: #198754;
-            text-decoration: none;
+        .book-author {
+            font-size: 0.8rem;
+            color: #6c757d;
         }
 
-        .footer a:hover {
-            color: #145c39;
+        .book-rating {
+            color: #ffc107;
         }
 
-        .categoria-terror {
-            font-family: 'Creepster', sans-serif;
-            color: #dc3545;
-            /* Uma cor mais escura ou avermelhada */
-            font-size: 1.5rem;
-            /* Ajuste o tamanho da fonte */
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.3em 0.6em;
         }
 
-        .categoria-fantasia {
-            font-family: 'Metal Mania', sans-serif;
-            color: #0d6efd;
-            /* Uma cor azul vibrante */
-            font-size: 1.5rem;
+        .btn-details {
+            font-size: 0.9rem;
         }
 
-        .categoria-romance {
-            font-family: 'Dancing Script', cursive;
-            color: #fd7e14;
-            /* Uma cor alaranjada ou rosa */
-            font-size: 1.5rem;
+        .book-title {
+            font-size: 1rem;
+        }
+
+        .book-author {
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+        }
+
+        .btn-details {
+            font-size: 0.9rem;
+        }
+
+        /* Logos Carousel */
+        .logos-container {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .logos-container::-webkit-scrollbar {
+            height: 0px;
+        }
+
+        .logo-item {
+            flex: 0 0 auto;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .logo-item:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-item img {
+            width: 120px;
+            height: auto;
+            transition: opacity 0.2s ease;
+        }
+
+        .logo-item:hover img {
+            opacity: 0.8;
+        }
+
+        /* Estilo para as setas do carrossel */
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 50px;
+            height: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(108, 117, 125, 0.5);
+            /* cinza semitransparente */
+            border-radius: 50%;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            background-color: var(--primary-green);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: transparent;
+            /* Remove o fundo do ícone */
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .carousel-control-prev-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e");
+        }
+
+        .carousel-control-next-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
         }
     </style>
 </head>
 
 <body>
+
+    <!-- Header - Menu institucional -->
     <header class="mb-4">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
@@ -128,6 +320,7 @@
                                 <i class="bi bi-box-seam me-1"></i>Empréstimos
                             </a>
                         </li>
+                        <!-- Arrumar método "Gerenciar"-->
                         <li class="nav-item" sec:authorize="hasRole('BIBLIOTECARIO')">
                             <a class="nav-link" th:classappend="${activePage == 'bibliotecario' ? 'active' : ''}"
                                 th:href="@{/bibliotecario}">
@@ -140,8 +333,7 @@
                             <a class="nav-link dropdown-toggle text-white" href="#" role="button"
                                 id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle me-1"></i>
-                                <span th:text="${usuario.nome}">Nome do
-                                    Usuário</span>
+                                <span th:text="${usuario.nome}">Nome do Usuário</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
                                 <li class="dropdown-header">
@@ -193,108 +385,236 @@
                     </div>
                 </div>
             </div>
-            </div>
         </nav>
     </header>
 
-    <main class="container">
+    <!-- Detaque Slide -->
+    <main class="container-fluid p-0">
+        <section class="hero-section">
+            <h1 class="hero-title">Bem-Vindo à Biblioteca</h1>
+            <p class="hero-subtitle">Descubra novos mundos em cada página. Temos uma vasta curadoria para inspirar sua
+                próxima leitura.</p>
+            <div class="hero-stats">
+                <span><i class="bi bi-book me-2"></i><strong th:text="'+' + ${livros.size()} + ' títulos'">+320
+                        títulos disponíveis</strong></span>
+                <span><i class="bi bi-star-fill me-2"></i><strong>Avaliação média: 4.8/5</strong></span>
+            </div>
+            <a href="#catalogo" class="btn btn-success btn-lg">Explorar Catálogo</a>
+        </section>
 
-        <div th:if="${sucesso}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${sucesso}">Ação realizada com sucesso!</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${erro}">Ocorreu um erro.</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
 
-        <h1 class="mb-4">📚 Catálogo de Livros</h1>
-        <hr>
-
-        <div th:if="${not #lists.isEmpty(livrosPopulares)}">
-            <h2 class="mt-5 mb-4">✨ Mais Populares</h2>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                <div class="col" th:each="livro : ${livrosPopulares}">
-                    <a th:href="@{/biblioteca/livro/detalhes/{id}(id=${livro.id})}"
-                        style="text-decoration:none; color:inherit;">
-                        <div class="card book-card">
-                            <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
-                                class="card-img-top" th:alt="'Capa de ' + ${livro.titulo}">
-                            <div class="card-body book-details">
-                                <div>
-                                    <h5 class="card-title" th:text="${livro.titulo}">Título do Livro</h5>
-                                    <p class="card-text text-muted mb-1"><small th:text="${livro.autor}">Autor</small>
-                                    </p>
-                                    <p class="card-text text-muted"><small
-                                            th:text="'Ano: ' + ${livro.anoPublicacao}">Ano: 2025</small></p>
-                                    <p class="card-text"><span class="badge bg-secondary"
-                                            th:text="${livro.categoria}">Categoria</span></p>
-                                </div>
-                                <div class="mt-auto">
-                                    <span th:if="${livro.quantidadeDisponivel > 0}"
-                                        class="badge bg-success status-badge">Disponível (<span
-                                            th:text="${livro.quantidadeDisponivel}"></span>)</span>
-                                    <span th:unless="${livro.quantidadeDisponivel > 0}"
-                                        class="badge bg-danger status-badge">Emprestado</span>
-                                    <div th:if="${livro.quantidadeDisponivel > 0}" class="d-grid mt-3">
-                                        <form th:action="@{/biblioteca/emprestimo/emprestar}" method="post">
-                                            <input type="hidden" name="livroId" th:value="${livro.id}" />
-                                            <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
-                                            <button type="submit" class="btn btn-success w-100">Emprestar</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+        <!-- Logo selos -->
+        <section class="category-section text-center py-5">
+            <h2 class="mb-4">Explorar por Categoria</h2>
+            <div class="container">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-md-3">
+                        <div class="category-card category-ficcao">
+                            <a href="#" class="category-content text-decoration-none text-white">
+                                <h3 class="category-title" style="font-family: 'Lora', serif;">Ficção</h3>
+                                <button class="btn btn-sm btn-outline-light mt-2">Ver Livros</button>
+                            </a>
                         </div>
-                    </a>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="category-card category-fantasia">
+                            <a href="#" class="category-content text-decoration-none text-white">
+                                <h3 class="category-title" style="font-family: 'Cinzel', serif;">Fantasia</h3>
+                                <button class="btn btn-sm btn-outline-light mt-2">Ver Livros</button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="category-card category-manga">
+                            <a href="#" class="category-content text-decoration-none text-white">
+                                <h3 class="category-title" style="font-family: 'Bebas Neue', sans-serif;">Mangá</h3>
+                                <button class="btn btn-sm btn-outline-light mt-2">Ver Livros</button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="category-card category-hq">
+                            <a href="#" class="category-content text-decoration-none text-white">
+                                <h3 class="category-title" style="font-family: 'Anton', sans-serif;">HQ</h3>
+                                <button class="btn btn-sm btn-outline-light mt-2">Ver Livros</button>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div th:each="categoria : ${categorias}">
-            <h2 class="mt-5 mb-4" th:text="${categoria}">Categoria do Livro</h2>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-
-                <div class="col" th:each="livro : ${livros}" th:if="${livro.categoria == categoria}">
-                    <a th:href="@{/biblioteca/livro/detalhes/{id}(id=${livro.id})}"
-                        style="text-decoration:none; color:inherit;">
-                        <div class="card book-card">
-                            <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
-                                class="card-img-top" th:alt="'Capa de ' + ${livro.titulo}">
-                            <div class="card-body book-details">
-                                <div>
-                                    <h5 class="card-title" th:text="${livro.titulo}">Título do Livro</h5>
-                                    <p class="card-text text-muted mb-1"><small th:text="${livro.autor}">Autor</small>
-                                    </p>
-                                    <p class="card-text text-muted"><small
-                                            th:text="'Ano: ' + ${livro.anoPublicacao}">Ano:
-                                            2025</small></p>
-                                    <p class="card-text"><span class="badge bg-secondary"
-                                            th:text="${livro.categoria}">Categoria</span></p>
-                                </div>
-                                <div class="mt-auto">
-                                    <span th:if="${livro.quantidadeDisponivel > 0}"
-                                        class="badge bg-success status-badge">Disponível (<span
-                                            th:text="${livro.quantidadeDisponivel}"></span>)</span>
-                                    <span th:unless="${livro.quantidadeDisponivel > 0}"
-                                        class="badge bg-danger status-badge">Emprestado</span>
-                                    <div th:if="${livro.quantidadeDisponivel > 0}" class="d-grid mt-3">
-                                        <form th:action="@{/biblioteca/emprestimo/emprestar}" method="post">
-                                            <input type="hidden" name="livroId" th:value="${livro.id}" />
-                                            <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
-                                            <button type="submit" class="btn btn-success w-100">Emprestar</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+        <!-- Todos os livros - Buscar Livros -->
+        <section id="catalogo" class="container py-5">
+            <h2 class="mb-4">Todos os Livros</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group mb-4">
+                        <input type="text" class="form-control" placeholder="Buscar por título, autor..."
+                            aria-label="Search field">
+                        <button class="btn btn-success" type="button"><i class="bi bi-search"></i> Buscar</button>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <!-- Disponível, Emprestado, Indíposnivel -->
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                <div class="col" th:each="livro : ${livros}">
+                    <div class="card book-card">
+                        <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
+                            class="card-img-top book-card-img" th:alt="'Capa de ' + ${livro.titulo}">
+                        <div class="card-body">
+                            <h5 class="book-title" style="font-size: 1rem;" th:text="${livro.titulo}">Título do Livro
+                            </h5>
+                            <p class="book-author" style="font-size: 0.8rem;" th:text="${livro.autor}">Autor do Livro
+                            </p>
+                            <div class="book-rating mb-2">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span th:if="${livro.quantidadeDisponivel > 0}" class="badge bg-success status-badge"
+                                    style="font-size: 0.7rem;">Disponível</span>
+                                <span th:unless="${livro.quantidadeDisponivel > 0}" class="badge bg-danger status-badge"
+                                    style="font-size: 0.7rem;">Emprestado</span>
+                                <span class="badge bg-secondary status-badge" style="font-size: 0.7rem;"
+                                    th:text="${livro.categoria}">Categoria</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/biblioteca/livro/detalhes/{id}(id=${livro.id})}"
+                                    class="btn btn-outline-success w-100 btn-details">Ver Detalhes</a>
+                                <form th:if="${livro.quantidadeDisponivel > 0}"
+                                    th:action="@{/biblioteca/emprestimo/emprestar}" method="post" style="width: 100%;">
+                                    <input type="hidden" name="livroId" th:value="${livro.id}" />
+                                    <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
+                                    <button type="submit" class="btn btn-success w-100 btn-details">Emprestar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
     </main>
 
-    <footer class="footer mt-5 pt-4 pb-4">
+    <section class="container py-5">
+        <h2 class="titulo text-center mb-5" style="font-family: 'Bebas Neue', sans-serif;">Navegue através dos seus
+            selos preferidos!</h2>
+        <div id="logosCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="d-flex justify-content-around">
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo-planet-manga.svg"
+                                alt="Planet Manga"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo-editora-panini.svg"
+                                alt="Panini"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo_marvel.svg"
+                                alt="Marvel"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo_dc.svg"
+                                alt="DC"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo_starwars.svg"
+                                alt="StarWars"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo_disney.svg"
+                                alt="Disney"></a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="d-flex justify-content-around">
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo_jbc.svg"
+                                alt="JBC"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo_pipocaenanquim.svg"
+                                alt="Pipoca &amp; Nanquim"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo_newpop.svg"
+                                alt="Editora New Pop"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo-veneta.svg"
+                                alt="Editora Veneta"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo-conrad.svg"
+                                alt="Editora Conrad"></a>
+                        <a href="#" class="logo-item"><img
+                                src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo-mythos.svg"
+                                alt="Mythos"></a>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#logosCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#logosCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Mundo Mangás-->
+    <section id="mangas" class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 style="font-family: 'Bebas Neue', sans-serif;">Mangás</h2>
+            <a href="#" class="btn btn-success">Ver mais <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row g-4 flex-nowrap overflow-auto pb-3">
+            <div class="col" style="flex: 0 0 180px;" th:each="livro : ${livros}" th:if="${livro.categoria == 'Mangá'}">
+                <div class="card p-3 d-flex flex-column" style="width: 100%; height: 100%;">
+                    <a th:href="@{/biblioteca/livro/detalhes/{id}(id=${livro.id})}"
+                        style="text-decoration:none; color:inherit; flex-grow: 1;">
+                        <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
+                            class="card-img-top mx-auto d-block" style="width: 90px; height: 122px; object-fit: cover;"
+                            th:alt="'Capa de ' + ${livro.titulo}">
+                        <div class="card-body p-2 text-center d-flex flex-column justify-content-end">
+                            <h5 class="book-title" style="font-size: 0.9rem; line-height: 1.2;"
+                                th:text="${livro.titulo}">Título do Mangá</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sessão HQ-->
+    <section class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 style="font-family: 'Bebas Neue', sans-serif;">HQs</h2>
+            <a href="#" class="btn btn-success">Ver mais <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row g-4 flex-nowrap overflow-auto pb-3">
+            <div class="col" style="flex: 0 0 180px;" th:each="livro : ${livros}" th:if="${livro.categoria == 'HQ'}">
+                <a th:href="@{/biblioteca/livro/detalhes/{id}(id=${livro.id})}"
+                    style="text-decoration:none; color:inherit;">
+                    <div class="card p-3 d-flex flex-column" style="width: 100%; height: 100%;">
+                        <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
+                            class="card-img-top mx-auto d-block" style="width: 90px; height: 122px; object-fit: cover;"
+                            th:alt="'Capa de ' + ${livro.titulo}">
+                        <div class="card-body p-2 text-center d-flex flex-column justify-content-end">
+                            <h5 class="book-title" style="font-size: 0.9rem; line-height: 1.2;"
+                                th:text="${livro.titulo}">Título da HQ</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+
+    <footer class="footer mt-5 pt-4 pb-4 bg-dark text-white">
         <div class="container">
             <div class="row text-center text-md-start">
                 <div class="col-md-6 mb-3">
@@ -320,14 +640,6 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
-        }, false);
-    </script>
 </body>
 
 </html>

@@ -8,7 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-// NOVOS IMPORTS
 import Biblioteca_ung.projeto.service.CustomUserDetails;
 import Biblioteca_ung.projeto.model.Usuario;
 
@@ -25,16 +24,36 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .authorizeHttpRequests(authorize -> authorize
+                                                // Rotas públicas (sem necessidade de login)
                                                 .requestMatchers("/", "/login", "/biblioteca/perfil/form",
                                                                 "/biblioteca/perfil/salvar", "/css/**",
                                                                 "/js/**", "/imagens/**", "/catalogo")
                                                 .permitAll()
 
-                                                // REGRAS RESTRITIVAS
+                                                // REGRAS RESTRITIVAS (do mais específico para o mais geral)
+                                                // Permite que qualquer usuário autenticado veja os detalhes do livro
                                                 .requestMatchers("/biblioteca/livro/detalhes/{id}").authenticated()
+
+                                                // Rotas para USUARIO
+                                                .requestMatchers("/emprestimos").hasRole("USUARIO")
+                                                .requestMatchers("/biblioteca/emprestimo/emprestar").hasRole("USUARIO")
+
+                                                // Rotas para BIBLIOTECARIO
+                                                .requestMatchers("/bibliotecario").hasRole("BIBLIOTECARIO")
+                                                .requestMatchers("/biblioteca/emprestimo/devolver")
+                                                .hasRole("BIBLIOTECARIO")
+
+                                                // Todas as outras rotas que começam com /biblioteca/livro são restritas
+                                                // a BIBLIOTECARIO
                                                 .requestMatchers("/biblioteca/livro/**").hasRole("BIBLIOTECARIO")
 
-                                                // AGORA O ACESSO AO /bibliotecario É CONTROLADO NO CONTROLLER
+                                                // Rotas de perfil que requerem apenas autenticação (qualquer role)
+                                                .requestMatchers("/biblioteca/perfil/editar",
+                                                                "/biblioteca/perfil/salvar-edicao")
+                                                .authenticated()
+
+                                                // Todas as outras requisições que não se encaixam nas regras acima
+                                                // requerem autenticação
                                                 .anyRequest().authenticated())
                                 // ...
                                 .formLogin(form -> form
@@ -42,35 +61,23 @@ public class SecurityConfig {
                                                 .loginProcessingUrl("/login")
                                                 // Redirecionamento condicional
                                                 .successHandler((request, response, authentication) -> {
-                                                        // 1. Obter o tipo selecionado no formulário
                                                         String tipoSelecionado = request.getParameter("tipo");
-
-                                                        // 2. Obter o usuário autenticado e seu Role real
                                                         CustomUserDetails userDetails = (CustomUserDetails) authentication
                                                                         .getPrincipal();
                                                         Usuario usuario = userDetails.getUsuario();
-                                                        String roleReal = usuario.getRole(); // USUARIO ou BIBLIOTECARIO
-
-                                                        // Converte o tipo selecionado para o formato da Role (ex:
-                                                        // "usuario" -> "USUARIO")
+                                                        String roleReal = usuario.getRole();
                                                         String tipoSelecionadoUpper = tipoSelecionado != null
                                                                         ? tipoSelecionado.toUpperCase()
                                                                         : "";
 
-                                                        // 3. Comparar as Roles: Se o usuário é Bibliotecário mas
-                                                        // selecionou Usuário, ou vice-versa
                                                         if (!tipoSelecionadoUpper.equals(roleReal)) {
-                                                                // Se o usuário logou com sucesso, mas selecionou a Role
-                                                                // errada
                                                                 response.sendRedirect("/login?role_error=true");
                                                                 return;
                                                         }
-
-                                                        // 4. Se as Roles coincidirem, prosseguir com o redirecionamento
                                                         if (roleReal.equals("BIBLIOTECARIO")) {
-                                                                response.sendRedirect("/bibliotecario"); // Bibliotecário
+                                                                response.sendRedirect("/bibliotecario");
                                                         } else {
-                                                                response.sendRedirect("/catalogo"); // Usuário
+                                                                response.sendRedirect("/catalogo");
                                                         }
                                                 })
                                                 .failureUrl("/login?error=true")
