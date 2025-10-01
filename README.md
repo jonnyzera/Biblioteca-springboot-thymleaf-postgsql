@@ -87,7 +87,7 @@ http://localhost:8080/biblioteca
 ```
 
 ## 👨‍💻 Autores (8º Semestre do Curso Ciência da Computação - Tizinho ) 
-**Disciplina: Fabrica de Software - Professor: Anselmo Universidade Guarulhos - UNG CENTRO**
+**Disciplina: Fabrica de Software - Universidade Guarulhos - UNG CENTRO**
 - João Victor Engenheiro de Java e DevOps | Estudante de Ciência da Computação - Contato: [joaovictor8600@yahoo.com.br]
 - Leonardo Porcel Analista de dados Python | Estudante de Ciência da Computação
 - Guilherme Silveira Ciêntista em dados Python |  Estudante de Ciência da Computação
