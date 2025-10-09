@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <title>Cadastro na Biblioteca</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
     <style>
         html {
             height: 100%;
@@ -35,6 +35,7 @@
         .form-title {
             font-weight: 600;
             font-size: 1.6rem;
+            color: #343a40;
         }
 
         .link-minimal {
@@ -77,17 +78,44 @@
             bottom: 0;
             width: 100%;
         }
+
+        /* Novas Classes para os ícones e estilo do título */
+        .header-form {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-form h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #198754;
+            /* Cor verde para o título */
+        }
+
+        .header-form .bi {
+            font-size: 2.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .header-form p {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .form-control::placeholder {
+            color: #adb5bd;
+        }
     </style>
 </head>
 
 <body class="container mt-5">
 
     <div class="row justify-content-center align-items-center">
-        <!-- Formulário -->
+
         <div class="col-md-6">
             <div class="login-card">
-                <div class="mb-4 text-center">
-                    <h2 class="form-title">📚 Entrar Biblioteca</h2>
+                <div class="mb-4 text-center header-form">
+                    <h2 class="form-title"><i class="bi bi-book-half"></i> Entrar Biblioteca</h2>
                     <p class="text-muted">Preencha suas informações pessoais</p>
                 </div>
 
@@ -112,7 +140,6 @@
                                 placeholder="Digite sua senha" required>
                         </div>
 
-
                         <div class="mb-3">
                             <label for="tipo" class="form-label">Você é:</label>
                             <select name="tipo" id="tipo" class="form-select" required>
@@ -121,7 +148,6 @@
                                 <option value="bibliotecario">Bibliotecário</option>
                             </select>
                         </div>
-
 
                         <div class="text-center mt-2">
                             <a href="/biblioteca/perfil/form" class="link-minimal text-primary">Não tem uma conta?
@@ -134,14 +160,12 @@
             </div>
         </div>
 
-        <!-- Ilustração -->
         <div class="col-md-6 text-center mt-4 mt-md-0">
             <img src="https://img.freepik.com/vetores-premium/ilustracao-de-conceito-de-biblioteca_701961-53.jpg"
                 alt="Ilustração Biblioteca" class="illustration">
         </div>
     </div>
 
-    <!-- Carrossel de patrocinadores -->
     <div class="patrocinadores-section text-center">
         <div class="patrocinadores-title">Nossos Patrocinadores</div>
         <div id="patrocinadoresCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -162,10 +186,8 @@
         </div>
     </div>
 
-    <!-- Fundadores da Biblioteca -->
     <div class="mt-5 mb-5 text-center fundadores">
         <h3 class="mb-4" style="font-weight: 600;">Fundadores da Biblioteca</h3>
-        <!-- CORRIGIDO: Adicionada classe gx-5 para espaçamento entre colunas e px-md-5 para espaçamento nas laterais -->
         <div class="row justify-content-center gx-5 px-md-5">
 
             <div class="col-6 col-md-2 mb-4">
@@ -201,7 +223,6 @@
         </div>
     </div>
 
-    <!-- Apoio via Pix -->
     <div class="mt-5 mb-5 text-center">
         <div
             style="background-color: #f1f3f5; border-radius: 20px; padding: 30px; max-width: 400px; margin: auto; box-shadow: 0 0 15px rgba(0,0,0,0.05);">
@@ -213,29 +234,26 @@
         </div>
     </div>
 
-    <!-- Rodapé -->
     <footer class="text-center">
         <p>© 2025 Biblioteca Comunitária - Todos os direitos reservados</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function copyPixCode() {
-            const pixCodeElement = document.getElementById('pixCode');
-            const successMessage = document.getElementById('copySuccess');
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePassword = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
 
-            // Cria um elemento temporário para copiar o texto
-            const tempInput = document.createElement('textarea');
-            tempInput.value = pixCodeElement.innerText;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-
-            // Mostra a mensagem de sucesso
-            successMessage.style.display = 'block';
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 2000);
-        }
+            if (togglePassword && password) {
+                togglePassword.addEventListener('click', function () {
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+                    this.querySelector('i').classList.toggle('bi-eye-fill');
+                    this.querySelector('i').classList.toggle('bi-eye-slash-fill');
+                });
+            }
+        });
     </script>
+</body>
+
+</html>
