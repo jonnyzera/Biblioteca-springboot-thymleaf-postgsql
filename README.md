@@ -18,7 +18,7 @@ Este projeto é um sistema simples de gerenciamento de biblioteca desenvolvido c
 - Spring Data JPA
 - Thymeleaf
 - PostgreSQL
-- Bootstrap 5 (via CDN)
+- **Bootstrap 5 (via CDN) - Utilizado para garantir a responsividade (Mobile First)**
 - Maven
 
 ## 📦 Estrutura do Projeto
