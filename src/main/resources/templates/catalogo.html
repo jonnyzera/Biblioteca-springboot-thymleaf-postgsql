@@ -30,6 +30,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            /* Garante que não haja barra de rolagem horizontal desnecessária */
             overflow-x: hidden;
         }
 
@@ -176,6 +177,7 @@
         }
 
         .book-card-img {
+            /* Altura fixa no desktop */
             height: 300px;
             object-fit: cover;
             width: 100%;
@@ -208,6 +210,7 @@
             font-size: 0.9rem;
         }
 
+        /* Otimização de fontes e espaçamento para todos os cards */
         .book-title {
             font-size: 1rem;
         }
@@ -291,13 +294,116 @@
         .carousel-control-next-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
         }
+
+        /* --- AJUSTES DE RESPONSIVIDADE GERAL (MOBILE) --- */
+        @media (max-width: 768px) {
+
+            /* Navbar e Dropdown */
+            .dropdown-menu-end {
+                min-width: 100%;
+            }
+
+            /* Hero Section */
+            .hero-section {
+                height: 40vh;
+                /* Reduz a altura para economizar espaço vertical */
+                padding: 30px 15px;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+                /* Reduz o título */
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+                /* Reduz o subtítulo */
+                margin-bottom: 1.5rem;
+            }
+
+            .hero-stats {
+                gap: 20px;
+                /* Reduz o espaçamento entre as estatísticas */
+                font-size: 0.9rem;
+            }
+
+            /* Cards de Categoria - Força empilhamento em 2 colunas */
+            .category-section .row>div {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+
+            .category-card {
+                min-height: 120px;
+                /* Reduz a altura do card de categoria */
+            }
+
+            .category-title {
+                font-size: 1.5rem;
+                /* Reduz o título da categoria */
+            }
+
+            /* Cards de Livros (Catálogo Principal) */
+            .book-card-img {
+                height: 200px;
+                /* Reduz a altura da capa do livro para caber melhor na tela */
+            }
+
+            .book-card .card-body {
+                padding: 0.8rem;
+                /* Reduz o padding interno do corpo do card */
+            }
+
+            .book-title {
+                font-size: 0.9rem;
+            }
+
+            .book-author {
+                font-size: 0.75rem;
+            }
+
+            .btn-details {
+                font-size: 0.8rem;
+                /* Reduz o botão */
+            }
+
+            /* Títulos de Seção */
+            .container h2,
+            .container-fluid h2 {
+                font-size: 1.5rem;
+            }
+
+            /* Seções de Rolagem Horizontal (Mangás, HQs) */
+            /* Garante que o item ocupe um bom espaço, mas permite 2/3 por tela */
+            #mangas .row>.col,
+            .container .row>.col[style*="flex: 0 0 180px"] {
+                flex: 0 0 45%;
+                /* Mostra 2 livros e permite a rolagem */
+                max-width: 45%;
+                margin-right: 15px;
+            }
+
+            /* Garante que o último item se ajuste corretamente */
+            #mangas .row>.col:last-child,
+            .container .row>.col:last-child[style*="flex: 0 0 180px"] {
+                margin-right: 0;
+            }
+
+            /* Footer: Já estava ajustado no passo anterior, apenas reforçando a regra de fonte */
+            .footer p,
+            .footer li a {
+                font-size: 0.875rem;
+                /* 14px */
+            }
+        }
+
+        /* --- FIM AJUSTES DE RESPONSIVIDADE GERAL --- */
     </style>
 </head>
 
 <body>
 
     <!-- Header - Menu institucional -->
-    <!-- <header class="mb-4"> -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" th:href="@{/catalogo}">
@@ -322,7 +428,6 @@
                         </a>
                     </li>
 
-                    <!-- Arrumar método "Gerenciar"-->
                     <li class="nav-item" sec:authorize="hasRole('BIBLIOTECARIO')">
                         <a class="nav-link" th:classappend="${activePage == 'bibliotecario' ? 'active' : ''}"
                             th:href="@{/bibliotecario}">
@@ -407,8 +512,9 @@
         <section class="category-section text-center py-5">
             <h2 class="mb-4">Explorar por Categoria</h2>
             <div class="container">
+                <!-- Alterado g-4 para g-2 no mobile via Bootstrap/CSS, mas mantendo o g-4 no desktop -->
                 <div class="row g-4 justify-content-center">
-                    <div class="col-md-3">
+                    <div class="col-6 col-md-3">
                         <div class="category-card category-ficcao">
                             <a href="#" class="category-content text-decoration-none text-white">
                                 <h3 class="category-title" style="font-family: 'Lora', serif;">Ficção</h3>
@@ -416,7 +522,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-6 col-md-3">
                         <div class="category-card category-fantasia">
                             <a href="#" class="category-content text-decoration-none text-white">
                                 <h3 class="category-title" style="font-family: 'Cinzel', serif;">Fantasia</h3>
@@ -424,7 +530,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-6 col-md-3">
                         <div class="category-card category-manga">
                             <a href="#" class="category-content text-decoration-none text-white">
                                 <h3 class="category-title" style="font-family: 'Bebas Neue', sans-serif;">Mangá</h3>
@@ -432,7 +538,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-6 col-md-3">
                         <div class="category-card category-hq">
                             <a href="#" class="category-content text-decoration-none text-white">
                                 <h3 class="category-title" style="font-family: 'Anton', sans-serif;">HQ</h3>
@@ -458,17 +564,16 @@
                 </div>
             </div>
 
-            <!-- Disponível, Emprestado, Indíposnivel -->
-
+            <!-- Catálogo Principal: Mantém 4 colunas em telas grandes (lg), mas usa 2 colunas (md) e 1 coluna (col-12) no mobile para melhor visualização -->
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 <div class="col" th:each="livro : ${livros}">
                     <div class="card book-card">
                         <img th:src="${livro.urlCapa != null and not #strings.isEmpty(livro.urlCapa) ? livro.urlCapa : 'https://via.placeholder.com/250x350.png?text=Capa+do+Livro'}"
                             class="card-img-top book-card-img" th:alt="'Capa de ' + ${livro.titulo}">
                         <div class="card-body">
-                            <h5 class="book-title" style="font-size: 1rem;" th:text="${livro.titulo}">Título do Livro
+                            <h5 class="book-title" th:text="${livro.titulo}">Título do Livro
                             </h5>
-                            <p class="book-author" style="font-size: 0.8rem;" th:text="${livro.autor}">Autor do Livro
+                            <p class="book-author" th:text="${livro.autor}">Autor do Livro
                             </p>
                             <div class="book-rating mb-2">
                                 <i class="bi bi-star-fill"></i>
@@ -479,10 +584,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span th:if="${livro.quantidadeDisponivel > 0}" class="badge bg-success status-badge"
-                                    style="font-size: 0.7rem;">Disponível</span>
+                                    th:style="'font-size: 0.7rem;'">Disponível</span>
                                 <span th:unless="${livro.quantidadeDisponivel > 0}" class="badge bg-danger status-badge"
-                                    style="font-size: 0.7rem;">Emprestado</span>
-                                <span class="badge bg-secondary status-badge" style="font-size: 0.7rem;"
+                                    th:style="'font-size: 0.7rem;'">Emprestado</span>
+                                <span class="badge bg-secondary status-badge" th:style="'font-size: 0.7rem;'"
                                     th:text="${livro.categoria}">Categoria</span>
                             </div>
                             <div class="d-flex gap-2">
@@ -507,10 +612,11 @@
     <section class="container py-5">
         <h2 class="titulo text-center mb-5" style="font-family: 'Bebas Neue', sans-serif;">Navegue através dos seus
             selos preferidos!</h2>
+        <!-- LOGOS CAROUSEL: Garante que os logos não quebrem o layout horizontalmente -->
         <div id="logosCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <div class="d-flex justify-content-around">
+                    <div class="d-flex justify-content-around logos-container">
                         <a href="#" class="logo-item"><img
                                 src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo-planet-manga.svg"
                                 alt="Planet Manga"></a>
@@ -532,7 +638,7 @@
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <div class="d-flex justify-content-around">
+                    <div class="d-flex justify-content-around logos-container">
                         <a href="#" class="logo-item"><img
                                 src="https://img.assinaja.com/upl/lojas/mundosinfinitos/imagens/logo_jbc.svg"
                                 alt="JBC"></a>
@@ -554,6 +660,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Botões de navegação do carrossel (sem alteração) -->
             <button class="carousel-control-prev" type="button" data-bs-target="#logosCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
@@ -571,8 +678,11 @@
             <h2 style="font-family: 'Bebas Neue', sans-serif;">Mangás</h2>
             <a href="#" class="btn btn-success">Ver mais <i class="bi bi-arrow-right"></i></a>
         </div>
+        <!-- Rolagem horizontal otimizada para mobile -->
         <div class="row g-4 flex-nowrap overflow-auto pb-3">
-            <div class="col" style="flex: 0 0 180px;" th:each="livro : ${livros}" th:if="${livro.categoria == 'Mangá'}">
+            <!-- Adicionado col-6 para mostrar 2 por linha no mobile -->
+            <div class="col-6 col-md-3" style="flex: 0 0 180px;" th:each="livro : ${livros}"
+                th:if="${livro.categoria == 'Mangá'}">
                 <div class="card p-3 d-flex flex-column" style="width: 100%; height: 100%;">
                     <a th:href="@{/biblioteca/livro/detalhes/{id}(id=${livro.id})}"
                         style="text-decoration:none; color:inherit; flex-grow: 1;">
@@ -580,8 +690,8 @@
                             class="card-img-top mx-auto d-block" style="width: 90px; height: 122px; object-fit: cover;"
                             th:alt="'Capa de ' + ${livro.titulo}">
                         <div class="card-body p-2 text-center d-flex flex-column justify-content-end">
-                            <h5 class="book-title" style="font-size: 0.9rem; line-height: 1.2;"
-                                th:text="${livro.titulo}">Título do Mangá</h5>
+                            <!-- Fonte reduzida no CSS media query para .book-title -->
+                            <h5 class="book-title" th:text="${livro.titulo}">Título do Mangá</h5>
                         </div>
                     </a>
                 </div>
@@ -595,8 +705,11 @@
             <h2 style="font-family: 'Bebas Neue', sans-serif;">HQs</h2>
             <a href="#" class="btn btn-success">Ver mais <i class="bi bi-arrow-right"></i></a>
         </div>
+        <!-- Rolagem horizontal otimizada para mobile -->
         <div class="row g-4 flex-nowrap overflow-auto pb-3">
-            <div class="col" style="flex: 0 0 180px;" th:each="livro : ${livros}" th:if="${livro.categoria == 'HQs'}">
+            <!-- Adicionado col-6 para mostrar 2 por linha no mobile -->
+            <div class="col-6 col-md-3" style="flex: 0 0 180px;" th:each="livro : ${livros}"
+                th:if="${livro.categoria == 'HQs'}">
                 <a th:href="@{/biblioteca/livro/detalhes/{id}(id=${livro.id})}"
                     style="text-decoration:none; color:inherit;">
                     <div class="card p-3 d-flex flex-column" style="width: 100%; height: 100%;">
@@ -604,8 +717,8 @@
                             class="card-img-top mx-auto d-block" style="width: 90px; height: 122px; object-fit: cover;"
                             th:alt="'Capa de ' + ${livro.titulo}">
                         <div class="card-body p-2 text-center d-flex flex-column justify-content-end">
-                            <h5 class="book-title" style="font-size: 0.9rem; line-height: 1.2;"
-                                th:text="${livro.titulo}">Título da HQ</h5>
+                            <!-- Fonte reduzida no CSS media query para .book-title -->
+                            <h5 class="book-title" th:text="${livro.titulo}">Título da HQ</h5>
                         </div>
                     </div>
                 </a>
@@ -614,15 +727,15 @@
     </section>
 
     <!-- Footer -->
-
     <footer class="footer mt-5 pt-4 pb-4 bg-dark text-white">
         <div class="container">
+            <!-- As classes de responsividade já estão aplicadas aqui e no CSS, garantindo o empilhamento e legibilidade -->
             <div class="row text-center text-md-start">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-6 mb-3 mb-md-0">
                     <h5 class="text-uppercase font-weight-bold text-success">Biblioteca</h5>
                     <p class="text-white">O seu portal para um mundo de conhecimento.</p>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-6 mb-3 mb-md-0">
                     <h5 class="text-uppercase font-weight-bold text-success">Links Úteis</h5>
                     <ul class="list-unstyled">
                         <li><a href="#" class="text-white">Núcleo Trabalhabilidade</a></li>

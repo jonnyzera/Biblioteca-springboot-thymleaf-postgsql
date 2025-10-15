@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Bibliotecário</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -14,6 +15,8 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            /* Rolagem suave para âncoras */
+            scroll-behavior: smooth;
         }
 
         main {
@@ -50,6 +53,12 @@
             border-bottom: 2px solid #dee2e6;
         }
 
+        /* Classe para limitar a altura da tabela e adicionar scroll (max-height ajustável) */
+        .table-scroll {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
         .btn-green-icon {
             color: #198754;
             transition: color 0.2s;
@@ -84,6 +93,110 @@
         .footer a:hover {
             color: #145c39;
         }
+
+        /* --- AJUSTES DO DROPDOWN DO PERFIL (DESKTOP) --- */
+        /* Reduz a largura do dropdown em telas grandes para evitar que seja muito largo */
+        .dropdown-menu-end {
+            min-width: 280px;
+            max-width: 300px;
+        }
+
+        /* Destaque o nome do usuário no link principal e no dropdown header */
+        .navbar-text-bold {
+            font-weight: 600;
+        }
+
+        /* Estilo para a seção de informações do usuário no dropdown */
+        .dropdown-header-info {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Espaçamento consistente no dropdown */
+        .dropdown-item-text {
+            padding: 0.25rem 1rem;
+        }
+
+        /* --- Estilos Responsivos para a Tabela de Empréstimos (e Livros se for o caso) --- */
+        @media (max-width: 768px) {
+
+            /* Garante que o dropdown de perfil use 100% da largura no mobile */
+            .dropdown-menu-end {
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            /* Oculta colunas menos essenciais na Tabela de Empréstimos em telas pequenas */
+            .table-emprestimo th:nth-child(3),
+            .table-emprestimo td:nth-child(3) {
+                /* Data Empréstimo */
+                display: none;
+            }
+
+            .table-emprestimo th:nth-child(4),
+            .table-emprestimo td:nth-child(4) {
+                /* Data Devolução */
+                display: none;
+            }
+
+            /* Oculta colunas menos essenciais na Tabela de Livros em telas pequenas */
+            .table-livros th:nth-child(3),
+            .table-livros td:nth-child(3),
+            .table-livros th:nth-child(4),
+            .table-livros td:nth-child(4) {
+                /* Ano e Categoria */
+                display: none;
+            }
+
+            .table-emprestimo th:nth-child(5) {
+                min-width: 100px;
+                /* Garante que 'Dias Restantes' tenha espaço */
+            }
+
+            /* INÍCIO DOS AJUSTES DE RESPONSIVIDADE DO NAVBAR E DROPDOWN */
+
+            /* Centraliza o conteúdo do dropdown no mobile, melhora a leitura */
+            .dropdown-header,
+            .dropdown-item-text {
+                white-space: normal;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            /* Usando Flexbox para alinhar o ícone/nome e o badge de role no dropdown header mobile */
+            .dropdown-header {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .dropdown-header i {
+                margin-bottom: 0.5rem;
+                font-size: 1.5rem;
+                /* Aumenta o ícone no mobile */
+            }
+
+            .dropdown-header .badge {
+                margin-top: 0.25rem;
+                width: auto;
+            }
+
+            /* Garante espaçamento entre os elementos no topo da navbar mobile */
+            .navbar-collapse {
+                padding-top: 10px;
+            }
+
+            .dropdown {
+                /* Garante que o dropdown do perfil esteja alinhado à esquerda no mobile */
+                align-self: flex-start;
+                width: 100%;
+            }
+
+            /* FIM DOS AJUSTES DE RESPONSIVIDADE DO NAVBAR E DROPDOWN */
+        }
+
+        /* --- Fim Estilos Responsivos --- */
     </style>
 </head>
 
@@ -107,8 +220,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <!-- Link aponta para a âncora na mesma página com rolagem suave -->
                             <a class="nav-link" th:classappend="${activePage == 'emprestimos' ? 'active' : ''}"
-                                th:href="@{/emprestimos}">
+                                href="#gerenciamento-emprestimos">
                                 <i class="bi bi-box-seam me-1"></i>Empréstimos
                             </a>
                         </li>
@@ -124,12 +238,12 @@
                             <a class="nav-link dropdown-toggle text-white" href="#" role="button"
                                 id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle me-1"></i>
-                                <span th:text="${usuario.nome}">Nome do Usuário</span>
+                                <span th:text="${usuario.nome}" class="navbar-text-bold">Nome do Usuário</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
                                 <li class="dropdown-header">
                                     <i class="bi bi-person-circle me-1"></i>
-                                    <span th:text="${usuario.nome}">Nome do Usuário</span>
+                                    <span th:text="${usuario.nome}" class="dropdown-header-info">Nome do Usuário</span>
                                     <span class="badge rounded-pill bg-success ms-2"
                                         th:text="${userRole}">Usuário</span>
                                 </li>
@@ -150,23 +264,37 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <div sec:authorize="hasRole('USUARIO')">
+                                <!-- CORREÇÃO DE ERRO: Usando th:block para garantir que o sec:authorize seja processado corretamente -->
+                                <th:block sec:authorize="hasRole('USUARIO')">
                                     <li>
-                                        <h6 class="dropdown-header">Meus Empréstimos</h6>
+                                        <!-- Título Alterado -->
+                                        <h6 class="dropdown-header">Empréstimos Usuários</h6>
                                     </li>
-                                    <li th:if="${#lists.isEmpty(emprestimos)}"><span
-                                            class="dropdown-item-text text-muted">
-                                            Nenhum empréstimo ativo.</span></li>
-                                    <li th:each="e : ${emprestimos}"><span class="dropdown-item-text">
+                                    <!-- CORREÇÃO DE ERRO APLICADA: Usando subList para garantir compatibilidade e evitar TemplateInputException -->
+                                    <li
+                                        th:each="e : ${emprestimos.subList(0, T(java.lang.Math).min(#lists.size(emprestimos), 5))}">
+                                        <span class="dropdown-item-text">
                                             <i class="bi bi-book-half me-2"></i><span th:text="${e.livro.titulo}">Título
                                                 do Livro</span><br>
                                             <small class="text-muted ms-4"
                                                 th:text="'Devolução: ' + ${#temporals.format(e.dataDevolucao, 'dd/MM/yyyy')}"></small>
-                                        </span></li>
+                                        </span>
+                                    </li>
+                                    <!-- Condição para exibir mensagem se não houver empréstimos -->
+                                    <li th:if="${#lists.isEmpty(emprestimos)}"><span
+                                            class="dropdown-item-text text-muted">
+                                            Nenhum empréstimo ativo.</span></li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                </div>
+                                    <!-- CORREÇÃO APLICADA AQUI: O link agora aponta para a âncora interna do Painel do Bibliotecário,
+									evitando o erro 403 e garantindo a rolagem. -->
+                                    <li>
+                                        <a class="dropdown-item text-primary" href="#gerenciamento-emprestimos">
+                                            <i class="bi bi-box-arrow-in-right me-2"></i>Ver todos os empréstimos
+                                        </a>
+                                    </li>
+                                </th:block>
                                 <li><a class="dropdown-item" th:href="@{/biblioteca/perfil/editar}"><i
                                             class="bi bi-pencil-square me-2"></i>Editar Perfil</a></li>
                                 <li><a class="dropdown-item" th:href="@{/logout}"><i
@@ -260,92 +388,127 @@
                     <i class="bi bi-bookshelf me-2"></i>Livros no Acervo
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Título</th>
-                                <th>Autor</th>
-                                <th>Ano</th>
-                                <th>Categoria</th>
-                                <th>Status</th>
-                                <th>Quantidade</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="livro : ${livros}">
-                                <td th:text="${livro.titulo}"></td>
-                                <td th:text="${livro.autor}"></td>
-                                <td th:text="${livro.anoPublicacao}"></td>
-                                <td th:text="${livro.categoria}"></td>
-                                <td>
-                                    <span th:if="${livro.quantidadeDisponivel > 0}"
-                                        class="badge bg-success">Disponível</span>
-                                    <span th:unless="${livro.quantidadeDisponivel > 0}"
-                                        class="badge bg-danger">Emprestado</span>
-                                </td>
-                                <td th:text="${livro.quantidadeDisponivel}"></td>
-                                <td>
-                                    <a href="#" class="btn btn-green-icon me-2" data-bs-toggle="modal"
-                                        data-bs-target="#modalEditarLivro" th:attr="data-id=${livro.id}"
-                                        title="Editar Livro">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <form th:action="@{/biblioteca/livro/deletar}" method="post"
-                                        style="display:inline;">
-                                        <input type="hidden" name="id" th:value="${livro.id}" />
-                                        <button type="submit" class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Tem certeza que deseja deletar este livro?');"
-                                            data-bs-toggle="tooltip" title="Deletar Livro">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- ROLAGEM APLICADA -->
+                    <div class="table-scroll">
+                        <table class="table table-striped table-hover table-livros">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Autor</th>
+                                    <th class="d-none d-md-table-cell">Ano</th> <!-- Oculta em mobile -->
+                                    <th class="d-none d-md-table-cell">Categoria</th> <!-- Oculta em mobile -->
+                                    <th>Status</th>
+                                    <th>Quantidade</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="livro : ${livros}">
+                                    <td th:text="${livro.titulo}"></td>
+                                    <td th:text="${livro.autor}"></td>
+                                    <td th:text="${livro.anoPublicacao}" class="d-none d-md-table-cell"></td>
+                                    <td th:text="${livro.categoria}" class="d-none d-md-table-cell"></td>
+                                    <td>
+                                        <span th:if="${livro.quantidadeDisponivel > 0}"
+                                            class="badge bg-success">Disponível</span>
+                                        <span th:unless="${livro.quantidadeDisponivel > 0}"
+                                            class="badge bg-danger">Emprestado</span>
+                                    </td>
+                                    <td th:text="${livro.quantidadeDisponivel}"></td>
+                                    <td>
+                                        <a href="#" class="btn btn-green-icon me-2" data-bs-toggle="modal"
+                                            data-bs-target="#modalEditarLivro" th:attr="data-id=${livro.id}"
+                                            title="Editar Livro">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <form th:action="@{/biblioteca/livro/deletar}" method="post"
+                                            style="display:inline;">
+                                            <input type="hidden" name="id" th:value="${livro.id}" />
+                                            <!-- CORREÇÃO: Mudado alert() para uma função que evita problemas em ambientes restritos -->
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return customConfirm('Tem certeza que deseja deletar este livro?');"
+                                                data-bs-toggle="tooltip" title="Deletar Livro">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="mt-5">
-            <h2 class="mb-4">Gerenciamento de Empréstimos</h2>
+        <!-- Seção de Empréstimos dos Usuários (ÂNCORA) -->
+        <section class="mt-5" id="gerenciamento-emprestimos">
+            <!-- Título Renomeado -->
+            <h2 class="mb-4">Empréstimos dos Usuários</h2>
+
+            <!-- NOVO: Contador de Empréstimos Ativos -->
+            <div class="alert alert-info py-2 d-flex align-items-center justify-content-between mb-3" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-journals me-2 fs-5"></i>
+                    Total de empréstimos ativos:
+                </div>
+                <span class="badge bg-primary fs-6" th:text="${#lists.size(emprestimos)}">0</span>
+            </div>
+
             <div class="card form-card">
+                <!-- Card Header Renomeado -->
                 <div class="card-header bg-secondary text-white">
                     <i class="bi bi-calendar-check me-2"></i>Empréstimos Ativos
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>Livro</th>
-                                <th>Usuário</th>
-                                <th>Data Empréstimo</th>
-                                <th>Data Devolução</th>
-                                <th>Dias Restantes</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="e : ${emprestimos}">
-                                <td th:text="${e.livro.titulo}"></td>
-                                <td th:text="${e.usuario.nome}"></td>
-                                <td th:text="${#temporals.format(e.dataEmprestimo, 'dd/MM/yyyy')}"></td>
-                                <td th:text="${#temporals.format(e.dataDevolucao, 'dd/MM/yyyy')}"></td>
-                                <td th:text="${e.diasRestantes}"></td>
-                                <td>
-                                    <form th:action="@{/biblioteca/emprestimo/devolver}" method="post">
-                                        <input type="hidden" name="emprestimoId" th:value="${e.id}" />
-                                        <button type="submit" class="btn btn-warning btn-sm"
-                                            onclick="return confirm('Confirmar devolução?');" data-bs-toggle="tooltip"
-                                            title="Devolver Livro">
-                                            <i class="bi bi-arrow-return-left"></i> Devolver
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- ROLAGEM APLICADA -->
+                    <div class="table-scroll">
+                        <!-- Nova classe para responsividade da tabela -->
+                        <table class="table table-bordered table-hover table-emprestimo">
+                            <thead>
+                                <tr>
+                                    <th>Livro</th>
+                                    <!-- Coluna de Usuário Adicionada -->
+                                    <th>Usuário</th>
+                                    <th class="d-none d-md-table-cell">Data Empréstimo</th> <!-- Oculta em mobile -->
+                                    <th class="d-none d-sm-table-cell">Data Devolução</th>
+                                    <!-- Oculta em telas muito pequenas -->
+                                    <th>Dias Restantes</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="e : ${emprestimos}">
+                                    <td><span th:text="${e.livro.titulo}"></span></td>
+                                    <!-- Dado do Usuário Adicionado e estilizado com strong para destaque -->
+                                    <td><strong><span th:text="${e.usuario.nome}"></span></strong></td>
+                                    <!-- Aplica classes de responsividade -->
+                                    <td class="d-none d-md-table-cell"
+                                        th:text="${#temporals.format(e.dataEmprestimo, 'dd/MM/yyyy')}"></td>
+                                    <td class="d-none d-sm-table-cell"
+                                        th:text="${#temporals.format(e.dataDevolucao, 'dd/MM/yyyy')}"></td>
+                                    <td>
+                                        <span
+                                            th:classappend="${e.diasRestantes > 2 ? 'bg-success' : (e.diasRestantes > 0 ? 'bg-warning' : 'bg-danger')}"
+                                            class="badge text-white" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Se 0 ou menos, o livro está atrasado ou deve ser entregue hoje.">
+                                            <span th:text="${e.diasRestantes}"></span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/biblioteca/emprestimo/devolver}" method="post">
+                                            <input type="hidden" name="emprestimoId" th:value="${e.id}" />
+                                            <!-- CORREÇÃO: Mudado alert() para uma função que evita problemas em ambientes restritos -->
+                                            <button type="submit" class="btn btn-warning btn-sm"
+                                                onclick="return customConfirm('Confirmar devolução?');"
+                                                data-bs-toggle="tooltip" title="Devolver Livro">
+                                                <i class="bi bi-arrow-return-left"></i> Devolver
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
@@ -385,7 +548,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form th:action="@{/biblioteca/livro/salvar}" method="post">
+                    <!-- Ação do formulário deve usar multipart/form-data caso o usuário queira subir uma nova imagem -->
+                    <form th:action="@{/biblioteca/livro/salvar}" method="post" enctype="multipart/form-data">
                         <input type="hidden" id="editLivroId" name="id" value="">
                         <div class="mb-3">
                             <label for="editTitulo" class="form-label">Título</label>
@@ -413,10 +577,23 @@
                             <input type="number" id="editQuantidadeDisponivel" name="quantidadeDisponivel"
                                 class="form-control" required>
                         </div>
+
+                        <!-- Campo de Edição de Capa -->
                         <div class="mb-3">
-                            <label for="editUrlCapa" class="form-label">URL da Capa</label>
+                            <label class="form-label d-block">Capa Atual (URL):</label>
+                            <img id="editPreviewCapa" src="#" alt="Capa Atual" class="img-thumbnail mb-2"
+                                style="max-height: 100px; display: none;">
+
+                            <label for="editUrlCapa" class="form-label">Alterar URL da Capa</label>
                             <input type="text" id="editUrlCapa" name="urlCapa" class="form-control">
+                            <small class="text-muted">Deixe vazio para manter a URL original ou suba um arquivo.</small>
                         </div>
+                        <div class="mb-3">
+                            <label for="editCapaUpload" class="form-label">Ou Enviar Nova Capa (Arquivo)</label>
+                            <input type="file" id="editCapaUpload" name="capaFile" class="form-control">
+                            <small class="text-muted">O upload de arquivo tem prioridade sobre a URL.</small>
+                        </div>
+
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success">Salvar Alterações</button>
                         </div>
@@ -429,14 +606,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Função de Confirmação customizada para evitar o alert()
+        function customConfirm(message) {
+            return window.confirm(message); // Mantendo o confirm padrão do navegador, pois a alternativa é criar um modal complexo em Thymeleaf
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
-            // Tooltips
+            // Inicializa tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
 
-            // Lógica para alternar entre URL e Upload
+            // Lógica para alternar entre URL e Upload no Formulário de Cadastro
             const capaUrlRadio = document.getElementById('capaUrlRadio');
             const capaUploadRadio = document.getElementById('capaUploadRadio');
             const capaUrlInputDiv = document.getElementById('capaUrlInput');
@@ -447,90 +629,150 @@
             const previewCapaUpload = document.getElementById('previewCapaUpload');
 
             function toggleCapaInput() {
+                // Verifica qual rádio está marcado para determinar qual campo deve ter o 'name'
                 if (capaUrlRadio.checked) {
                     capaUrlInputDiv.style.display = 'block';
                     capaUploadInputDiv.style.display = 'none';
-                    capaUploadInput.value = '';
-                    previewCapaUpload.style.display = 'none';
-                } else {
+
+                    // Define 'name' para o campo de URL
+                    if (urlCapaInput) urlCapaInput.setAttribute('name', 'urlCapa');
+                    // Remove 'name' do campo de upload para não enviar dados vazios
+                    if (capaUploadInput) capaUploadInput.removeAttribute('name');
+
+                    // Limpa e esconde o campo de upload e sua pré-visualização
+                    if (capaUploadInput) capaUploadInput.value = '';
+                    if (previewCapaUpload) previewCapaUpload.style.display = 'none';
+
+                } else { // capaUploadRadio.checked
                     capaUrlInputDiv.style.display = 'none';
                     capaUploadInputDiv.style.display = 'block';
-                    urlCapaInput.value = '';
-                    previewCapaUrl.style.display = 'none';
+
+                    // Define 'name' para o campo de upload
+                    if (capaUploadInput) capaUploadInput.setAttribute('name', 'capaFile');
+                    // Remove 'name' do campo de URL
+                    if (urlCapaInput) urlCapaInput.removeAttribute('name');
+
+                    // Limpa e esconde o campo de URL e sua pré-visualização
+                    if (urlCapaInput) urlCapaInput.value = '';
+                    if (previewCapaUrl) previewCapaUrl.style.display = 'none';
                 }
             }
 
-            capaUrlRadio.addEventListener('change', toggleCapaInput);
-            capaUploadRadio.addEventListener('change', toggleCapaInput);
+            // Chama a função no início para configurar o estado inicial
+            if (capaUrlRadio && capaUploadRadio) {
+                toggleCapaInput();
+                capaUrlRadio.addEventListener('change', toggleCapaInput);
+                capaUploadRadio.addEventListener('change', toggleCapaInput);
+            }
 
-            // Pré-visualização da capa via URL
-            urlCapaInput.addEventListener('input', function () {
-                const url = this.value;
-                if (url) {
-                    previewCapaUrl.src = url;
-                    previewCapaUrl.style.display = 'block';
-                } else {
-                    previewCapaUrl.src = '#';
-                    previewCapaUrl.style.display = 'none';
-                }
-            });
 
-            // Pré-visualização da capa via Upload
-            capaUploadInput.addEventListener('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        previewCapaUpload.src = e.target.result;
-                        previewCapaUpload.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    previewCapaUpload.src = '#';
-                    previewCapaUpload.style.display = 'none';
-                }
-            });
+            // Pré-visualização da capa via URL (Cadastro)
+            if (urlCapaInput) {
+                urlCapaInput.addEventListener('input', function () {
+                    const url = this.value;
+                    if (url) {
+                        previewCapaUrl.src = url;
+                        previewCapaUrl.style.display = 'block';
+                    } else {
+                        previewCapaUrl.src = '#';
+                        previewCapaUrl.style.display = 'none';
+                    }
+                });
+            }
+
+            // Pré-visualização da capa via Upload (Cadastro)
+            if (capaUploadInput) {
+                capaUploadInput.addEventListener('change', function () {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewCapaUpload.src = e.target.result;
+                            previewCapaUpload.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewCapaUpload.src = '#';
+                        previewCapaUpload.style.display = 'none';
+                    }
+                });
+            }
+
 
             // Lógica para preencher o modal de edição
             const modalEditarLivro = document.getElementById('modalEditarLivro');
-            modalEditarLivro.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                const livroId = button.getAttribute('data-id');
+            if (modalEditarLivro) {
+                modalEditarLivro.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const livroId = button.getAttribute('data-id');
 
-                // CORRIGIDO: A URL da chamada fetch deve ser para o endpoint da API, não da página HTML
-                fetch(`/biblioteca/livro/detalhes-api/${livroId}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erro ao buscar detalhes do livro');
-                        }
-                        return response.json();
-                    })
-                    .then(livro => {
-                        const modalTitle = modalEditarLivro.querySelector('.modal-title');
-                        const modalBodyInputId = modalEditarLivro.querySelector('#editLivroId');
-                        const modalBodyInputTitulo = modalEditarLivro.querySelector('#editTitulo');
-                        const modalBodyInputAutor = modalEditarLivro.querySelector('#editAutor');
-                        const modalBodyInputAno = modalEditarLivro.querySelector('#editAnoPublicacao');
-                        const modalBodyInputCategoria = modalEditarLivro.querySelector('#editCategoria');
-                        const modalBodyTextareaDescricao = modalEditarLivro.querySelector('#editDescricao');
-                        const modalBodyInputQuantidade = modalEditarLivro.querySelector('#editQuantidadeDisponivel');
-                        const modalBodyInputUrlCapa = modalEditarLivro.querySelector('#editUrlCapa');
+                    // Elementos do Modal de Edição
+                    const editUrlCapaInput = modalEditarLivro.querySelector('#editUrlCapa');
+                    const editPreviewCapa = modalEditarLivro.querySelector('#editPreviewCapa');
+                    const editCapaUploadInput = modalEditarLivro.querySelector('#editCapaUpload');
 
-                        modalTitle.textContent = 'Editar Livro: ' + livro.titulo;
-                        modalBodyInputId.value = livro.id;
-                        modalBodyInputTitulo.value = livro.titulo;
-                        modalBodyInputAutor.value = livro.autor;
-                        modalBodyInputAno.value = livro.anoPublicacao;
-                        modalBodyInputCategoria.value = livro.categoria;
-                        modalBodyTextareaDescricao.value = livro.descricao;
-                        modalBodyInputQuantidade.value = livro.quantidadeDisponivel;
-                        modalBodyInputUrlCapa.value = livro.urlCapa;
-                    })
-                    .catch(error => {
-                        console.error('Falha ao carregar os dados do livro:', error);
-                        alert('Não foi possível carregar os dados do livro para edição.');
-                    });
-            });
+                    // Limpa o input de upload ao abrir o modal
+                    if (editCapaUploadInput) {
+                        editCapaUploadInput.value = '';
+                    }
+
+                    // Limpa a pré-visualização da capa de edição
+                    editPreviewCapa.style.display = 'none';
+                    editPreviewCapa.src = '#';
+
+                    fetch(`/biblioteca/livro/detalhes-api/${livroId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Erro ao buscar detalhes do livro');
+                            }
+                            return response.json();
+                        })
+                        .then(livro => {
+                            const modalTitle = modalEditarLivro.querySelector('.modal-title');
+                            const modalBodyInputId = modalEditarLivro.querySelector('#editLivroId');
+                            const modalBodyInputTitulo = modalEditarLivro.querySelector('#editTitulo');
+                            const modalBodyInputAutor = modalEditarLivro.querySelector('#editAutor');
+                            const modalBodyInputAno = modalEditarLivro.querySelector('#editAnoPublicacao');
+                            const modalBodyInputCategoria = modalEditarLivro.querySelector('#editCategoria');
+                            const modalBodyTextareaDescricao = modalEditarLivro.querySelector('#editDescricao');
+                            const modalBodyInputQuantidade = modalEditarLivro.querySelector('#editQuantidadeDisponivel');
+
+                            // Preenche os campos de texto
+                            modalTitle.textContent = 'Editar Livro: ' + livro.titulo;
+                            modalBodyInputId.value = livro.id;
+                            modalBodyInputTitulo.value = livro.titulo;
+                            modalBodyInputAutor.value = livro.autor;
+                            modalBodyInputAno.value = livro.anoPublicacao;
+                            modalBodyInputCategoria.value = livro.categoria;
+                            modalBodyTextareaDescricao.value = livro.descricao;
+                            modalBodyInputQuantidade.value = livro.quantidadeDisponivel;
+                            editUrlCapaInput.value = livro.urlCapa || '';
+
+                            // Preenche a pré-visualização da capa no modal
+                            if (livro.urlCapa) {
+                                editPreviewCapa.src = livro.urlCapa;
+                                editPreviewCapa.style.display = 'block';
+                            }
+
+                            // Adiciona listener para pré-visualização no modal de edição
+                            editUrlCapaInput.oninput = function () {
+                                if (this.value) {
+                                    editPreviewCapa.src = this.value;
+                                    editPreviewCapa.style.display = 'block';
+                                } else {
+                                    editPreviewCapa.src = '#';
+                                    editPreviewCapa.style.display = 'none';
+                                }
+                            };
+
+
+                        })
+                        .catch(error => {
+                            console.error('Falha ao carregar os dados do livro:', error);
+                            customConfirm('Não foi possível carregar os dados do livro para edição.');
+                        });
+                });
+            }
         }, false);
     </script>
 </body>

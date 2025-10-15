@@ -34,8 +34,11 @@ public class SecurityConfig {
                                                 // Permite que qualquer usuário autenticado veja os detalhes do livro
                                                 .requestMatchers("/biblioteca/livro/detalhes/{id}").authenticated()
 
+                                                // Rotas para Empréstimos (acesso liberado para Bibliotecário para
+                                                // que o Controller possa redirecioná-lo)
+                                                .requestMatchers("/emprestimos").hasAnyRole("USUARIO", "BIBLIOTECARIO")
+
                                                 // Rotas para USUARIO
-                                                .requestMatchers("/emprestimos").hasRole("USUARIO")
                                                 .requestMatchers("/biblioteca/emprestimo/emprestar").hasRole("USUARIO")
 
                                                 // Rotas para BIBLIOTECARIO
@@ -48,7 +51,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/biblioteca/livro/**").hasRole("BIBLIOTECARIO")
 
                                                 // Rotas de perfil que requerem apenas autenticação (qualquer role)
-                                                .requestMatchers("/biblioteca/perfil/editar",
+                                                .requestMatchers("/biblioteca/perfil",
+                                                                "/biblioteca/perfil/editar",
                                                                 "/biblioteca/perfil/salvar-edicao")
                                                 .authenticated()
 
@@ -59,24 +63,19 @@ public class SecurityConfig {
                                 .formLogin(form -> form
                                                 .loginPage("/login")
                                                 .loginProcessingUrl("/login")
-                                                // Redirecionamento condicional
+                                                // Redirecionamento condicional simplificado
                                                 .successHandler((request, response, authentication) -> {
-                                                        String tipoSelecionado = request.getParameter("tipo");
                                                         CustomUserDetails userDetails = (CustomUserDetails) authentication
                                                                         .getPrincipal();
                                                         Usuario usuario = userDetails.getUsuario();
                                                         String roleReal = usuario.getRole();
-                                                        String tipoSelecionadoUpper = tipoSelecionado != null
-                                                                        ? tipoSelecionado.toUpperCase()
-                                                                        : "";
 
-                                                        if (!tipoSelecionadoUpper.equals(roleReal)) {
-                                                                response.sendRedirect("/login?role_error=true");
-                                                                return;
-                                                        }
+                                                        // Ação Principal: Redirecionar diretamente para a área do
+                                                        // Bibliotecário
                                                         if (roleReal.equals("BIBLIOTECARIO")) {
                                                                 response.sendRedirect("/bibliotecario");
                                                         } else {
+                                                                // Redirecionamento padrão para o Usuário
                                                                 response.sendRedirect("/catalogo");
                                                         }
                                                 })

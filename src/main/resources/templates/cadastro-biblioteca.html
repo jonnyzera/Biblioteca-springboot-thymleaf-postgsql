@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- Viewport é essencial para responsividade -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criar Perfil Completo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -26,13 +28,10 @@
             padding: 30px;
             border-radius: 16px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-            max-width: 500px;
-            margin: 50px auto;
         }
 
         footer {
             background-color: #198754;
-            /* mesma cor do botão */
             color: #fff;
             padding: 15px 0;
             font-size: 0.9rem;
@@ -42,101 +41,153 @@
         }
 
         .btn-voltar {
+            /* Posição absoluta com espaçamento ampliado no desktop */
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 50px;
+            left: 50px;
             color: #198754;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             text-decoration: none;
             transition: color 0.2s ease;
+            z-index: 10;
         }
 
         .btn-voltar:hover {
             color: #145c39;
         }
+
+        /* Classe unificada para o recuo vertical do formulário */
+        .form-recess {
+            /* Recuo padrão para Desktop (5rem = ~80px) */
+            margin-top: 5rem !important;
+        }
+
+        /* MEDIA QUERY: Ajustes para telas pequenas (Mobile) */
+        @media (max-width: 767.98px) {
+            .btn-voltar {
+                /* Posição mais compacta no mobile */
+                top: 30px;
+                left: 30px;
+                font-size: 1.4rem;
+            }
+
+            .form-card {
+                /* Reduz o padding interno do card no mobile */
+                padding: 20px;
+            }
+
+            /* Garante o recuo do formulário no mobile (4rem = ~64px de separação da seta) */
+            .form-recess {
+                margin-top: 4rem !important;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Botão Voltar (Posição absoluta, bem espaçado do topo e lateral) -->
     <a th:href="@{/login}" class="btn-voltar" title="Voltar para Login">
         <i class="bi bi-arrow-left-circle"></i>
     </a>
 
-    <div class="form-card">
+    <!-- Main Content Area: Aplica a classe form-recess para controlar o espaçamento superior -->
+    <main class="container mb-4 form-recess mb-md-5">
+        <div class="row justify-content-center">
+            <!-- Coluna Responsiva: 100% no mobile, 50% no desktop -->
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6">
 
-        <h3 class="text-center mb-4">Criar Perfil Completo</h3>
+                <div class="form-card">
 
-        <form th:action="@{/biblioteca/perfil/salvar}" th:object="${perfilCadastroDTO}" method="post">
+                    <h3 class="text-center mb-4">Criar Perfil Completo</h3>
 
-            <div class="mb-3">
-                <label for="tipo" class="form-label">Você deseja se cadastrar como:</label>
-                <select th:field="*{tipo}" id="tipo" class="form-select" required>
-                    <option value="">-- Selecione --</option>
-                    <option value="usuario">Usuário</option>
-                    <option value="bibliotecario">Bibliotecário</option>
-                </select>
-                <p class="text-danger" th:if="${#fields.hasErrors('tipo')}" th:text="${#fields.errors('tipo')[0]}"></p>
+                    <!-- ATENÇÃO: Adicionado ID para permitir que o botão externo submeta o formulário -->
+                    <form th:action="@{/biblioteca/perfil/salvar}" th:object="${perfilCadastroDTO}" method="post"
+                        id="perfilForm">
+
+                        <div class="mb-3">
+                            <label for="tipo" class="form-label">Você deseja se cadastrar como:</label>
+                            <select th:field="*{tipo}" id="tipo" class="form-select" required>
+                                <option value="">-- Selecione --</option>
+                                <option value="usuario">Usuário</option>
+                                <option value="bibliotecario">Bibliotecário</option>
+                            </select>
+                            <p class="text-danger" th:if="${#fields.hasErrors('tipo')}"
+                                th:text="${#fields.errors('tipo')[0]}"></p>
+                        </div>
+
+                        <!-- Campos condicionais para USUÁRIO -->
+                        <div id="extraUsuario" class="mb-3" style="display:none;">
+                            <label for="carteirinha" class="form-label">Número da Carteirinha</label>
+                            <input type="text" th:field="*{carteirinha}" id="carteirinha" class="form-control"
+                                placeholder="Digite o número da carteirinha">
+                            <p class="text-danger" th:if="${#fields.hasErrors('carteirinha')}"
+                                th:text="${#fields.errors('carteirinha')[0]}"></p>
+                        </div>
+
+                        <!-- Campos condicionais para BIBLIOTECÁRIO -->
+                        <div id="extraBibliotecario" class="mb-3" style="display:none;">
+                            <label for="registro" class="form-label">Registro do Conselho</label>
+                            <input type="text" th:field="*{registro}" id="registro" class="form-control"
+                                placeholder="Digite seu registro profissional">
+                            <p class="text-danger" th:if="${#fields.hasErrors('registro')}"
+                                th:text="${#fields.errors('registro')[0]}"></p>
+                        </div>
+
+                        <!-- Campos Padrão -->
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome Completo</label>
+                            <input type="text" th:field="*{nome}" id="nome" class="form-control"
+                                placeholder="Digite seu nome e sobrenome" required>
+                            <p class="text-danger" th:if="${#fields.hasErrors('nome')}"
+                                th:text="${#fields.errors('nome')[0]}"></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" th:field="*{email}" id="email" class="form-control"
+                                placeholder="Digite seu e-mail" required>
+                            <p class="text-danger" th:if="${#fields.hasErrors('email')}"
+                                th:text="${#fields.errors('email')[0]}">
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Senha</label>
+                            <input type="password" th:field="*{senha}" id="senha" class="form-control"
+                                placeholder="Digite sua senha" required>
+                            <p class="text-danger" th:if="${#fields.hasErrors('senha')}"
+                                th:text="${#fields.errors('senha')[0]}">
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="novaSenha" class="form-label">Confirme a Senha</label>
+                            <input type="password" th:field="*{novaSenha}" id="novaSenha" class="form-control"
+                                placeholder="Confirme sua senha" required>
+                            <p class="text-danger" th:if="${#fields.hasErrors('novaSenha')}"
+                                th:text="${#fields.errors('novaSenha')[0]}"></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cpf" class="form-label">CPF</label>
+                            <input type="text" th:field="*{cpf}" id="cpf" class="form-control"
+                                placeholder="000.000.000-00" required>
+                            <p class="text-danger" th:if="${#fields.hasErrors('cpf')}"
+                                th:text="${#fields.errors('cpf')[0]}"></p>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- BOTÃO DE ENVIO MOVIDO PARA FORA DO form-card. mt-4 adiciona o espaçamento necessário. -->
+                <div class="d-grid mt-4">
+                    <!-- O atributo 'form' garante que este botão submeta o formulário 'perfilForm' -->
+                    <button type="submit" class="btn btn-success" form="perfilForm">Salvar Perfil</button>
+                </div>
+
             </div>
-
-            <div id="extraUsuario" class="mb-3" style="display:none;">
-                <label for="carteirinha" class="form-label">Número da Carteirinha</label>
-                <input type="text" th:field="*{carteirinha}" id="carteirinha" class="form-control"
-                    placeholder="Digite o número da carteirinha">
-                <p class="text-danger" th:if="${#fields.hasErrors('carteirinha')}"
-                    th:text="${#fields.errors('carteirinha')[0]}"></p>
-            </div>
-
-            <div id="extraBibliotecario" class="mb-3" style="display:none;">
-                <label for="registro" class="form-label">Registro do Conselho</label>
-                <input type="text" th:field="*{registro}" id="registro" class="form-control"
-                    placeholder="Digite seu registro profissional">
-                <p class="text-danger" th:if="${#fields.hasErrors('registro')}"
-                    th:text="${#fields.errors('registro')[0]}"></p>
-            </div>
-
-            <div class="mb-3">
-                <label for="nome" class="form-label">Nome Completo</label>
-                <input type="text" th:field="*{nome}" id="nome" class="form-control"
-                    placeholder="Digite seu nome e sobrenome" required>
-                <p class="text-danger" th:if="${#fields.hasErrors('nome')}" th:text="${#fields.errors('nome')[0]}"></p>
-            </div>
-
-            <div class="mb-3">
-                <label for="email" class="form-label">E-mail</label>
-                <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="Digite seu e-mail"
-                    required>
-                <p class="text-danger" th:if="${#fields.hasErrors('email')}" th:text="${#fields.errors('email')[0]}">
-                </p>
-            </div>
-
-            <div class="mb-3">
-                <label for="senha" class="form-label">Senha</label>
-                <input type="password" th:field="*{senha}" id="senha" class="form-control"
-                    placeholder="Digite sua senha" required>
-                <p class="text-danger" th:if="${#fields.hasErrors('senha')}" th:text="${#fields.errors('senha')[0]}">
-                </p>
-            </div>
-
-            <div class="mb-3">
-                <label for="novaSenha" class="form-label">Confirme a Senha</label>
-                <input type="password" th:field="*{novaSenha}" id="novaSenha" class="form-control"
-                    placeholder="Confirme sua senha" required>
-                <p class="text-danger" th:if="${#fields.hasErrors('novaSenha')}"
-                    th:text="${#fields.errors('novaSenha')[0]}"></p>
-            </div>
-
-            <div class="mb-3">
-                <label for="cpf" class="form-label">CPF</label>
-                <input type="text" th:field="*{cpf}" id="cpf" class="form-control" placeholder="000.000.000-00"
-                    required>
-                <p class="text-danger" th:if="${#fields.hasErrors('cpf')}" th:text="${#fields.errors('cpf')[0]}"></p>
-            </div>
-
-            <div class="d-grid">
-                <button type="submit" class="btn btn-success">Salvar Perfil</button>
-            </div>
-        </form>
-    </div>
+        </div>
+    </main>
 
     <footer>
         <p>© 2025 Biblioteca Comunitária - Todos os direitos reservados</p>
@@ -164,7 +215,7 @@
             // 1. Mostrar/esconder campos extras conforme a mudança
             document.getElementById('tipo').addEventListener('change', toggleExtraFields);
 
-            // 2. Chamar a função imediatamente no carregamento da página (CORREÇÃO)
+            // 2. Chamar a função imediatamente no carregamento da página
             toggleExtraFields();
         });
     </script>
