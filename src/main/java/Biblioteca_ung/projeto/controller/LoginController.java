@@ -15,15 +15,15 @@ public class LoginController {
         return "login-biblioteca";
     }
 
-    // NOVO: Mapeamento para carregar o arquivo principal.html
+    // ALTERADO: Mapeamento para carregar o novo arquivo lading-page.html
     @GetMapping("/principal")
     public String mainPage() {
-        return "principal";
+        return "lading-page";
     }
 
-    // ALTERADO: Redireciona a rota raiz ("/") para a nova tela principal
+    // ALTERADO: Redireciona a rota raiz ("/") para a nova Landing Page
     @GetMapping("/")
     public String home() {
-        return "redirect:/principal";
+        return "lading-page"; // Retorna o template lading-page.html
     }
 }
