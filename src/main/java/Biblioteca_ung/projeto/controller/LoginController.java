@@ -12,11 +12,18 @@ public class LoginController {
     @GetMapping("/login")
     public String loginPage(Model model) {
         model.addAttribute("perfilCadastroDTO", new PerfilCadastroDTO());
-        return "login-biblioteca"; // O arquivo .html que o log aponta como o correto é login-biblioteca
+        return "login-biblioteca";
     }
 
+    // NOVO: Mapeamento para carregar o arquivo principal.html
+    @GetMapping("/principal")
+    public String mainPage() {
+        return "principal";
+    }
+
+    // ALTERADO: Redireciona a rota raiz ("/") para a nova tela principal
     @GetMapping("/")
     public String home() {
-        return "redirect:/login";
+        return "redirect:/principal";
     }
 }

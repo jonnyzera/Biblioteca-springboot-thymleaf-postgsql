@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-Vindo à Biblioteca</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #198754;
+            --dark-bg: #212529;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Hero Section - Destaque com gradiente verde */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(25, 135, 84, 0.9), rgba(15, 100, 50, 0.9)), url('https://images.unsplash.com/photo-1551888562-58848d7c9f80?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 15px;
+            text-align: center;
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-title {
+            font-weight: 700;
+            font-size: 3rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin: 20px auto 40px;
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-card {
+            border: 1px solid var(--primary-green);
+            border-radius: 12px;
+            overflow: hidden;
+            height: 100%;
+            background-color: white;
+            transition: border-color 0.3s ease;
+        }
+        
+        .news-card:hover {
+            border-color: var(--dark-bg);
+        }
+
+        .news-card img {
+            height: 250px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .news-card-body {
+            padding: 20px;
+        }
+
+        .footer {
+            background-color: var(--dark-bg);
+            color: white;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 60px 15px;
+                border-bottom-left-radius: 30px;
+                border-bottom-right-radius: 30px;
+            }
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            .feature-card {
+                min-height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar simples para não-autenticados -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+            <div class="container">
+                <a class="navbar-brand text-dark" th:href="@{/principal}">
+                    <i class="bi bi-book-half me-2" style="color: var(--primary-green);"></i>
+                    <span style="font-weight: 700;">Biblioteca</span>
+                </a>
+                <div class="d-flex">
+                    <a th:href="@{/login}" class="btn btn-outline-dark me-2">
+                        <i class="bi bi-box-arrow-in-right"></i> Entrar
+                    </a>
+                    <a th:href="@{/biblioteca/perfil/form}" class="btn btn-success">
+                        <i class="bi bi-person-plus-fill"></i> Cadastro
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1">
+        <!-- Seção Hero - Chamada principal -->
+        <section class="hero-section">
+            <div class="container">
+                <h1 class="hero-title mb-3">Seu Portal de Conhecimento</h1>
+                <p class="hero-subtitle">
+                    Encontre os melhores títulos de ficção, ciência e muito mais. Cadastre-se gratuitamente e comece sua jornada de leitura hoje mesmo!
+                </p>
+                <a th:href="@{/biblioteca/perfil/form}" class="btn btn-warning btn-lg me-3">
+                    Cadastre-se Agora
+                </a>
+                <a th:href="@{/login}" class="btn btn-outline-light btn-lg">
+                    Acessar o Catálogo
+                </a>
+            </div>
+        </section>
+
+        <!-- Seção Novidades (News/Destaques) -->
+        <section class="container py-5">
+            <h2 class="text-center mb-5" style="color: var(--dark-bg); font-weight: 700;">Novidades da Semana</h2>
+            <div class="row g-4">
+                <!-- Destaque 1 -->
+                <div class="col-md-4">
+                    <div class="news-card">
+                        <img th:src="@{/imagens/camaleao.png}" onerror="this.src='https://placehold.co/600x400/198754/ffffff?text=Novo+Livro+1'" alt="Capa de Novidade 1">
+                        <div class="news-card-body">
+                            <h5 class="card-title text-dark">Prêmio Literário VEREE 2025</h5>
+                            <p class="card-text text-muted small">Confira a seleção de indicados e vencedores disponíveis no nosso acervo.</p>
+                            <a th:href="@{/login}" class="text-success text-decoration-none small" style="font-weight: 600;">Ver Coleção <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Destaque 2 (Placeholder) -->
+                <div class="col-md-4">
+                    <div class="news-card">
+                        <img src="https://placehold.co/600x400/0d6efd/ffffff?text=Ficção+Científica+e+Tecnologia" alt="Capa de Novidade 2">
+                        <div class="news-card-body">
+                            <h5 class="card-title text-dark">Nova Categoria: IA e Futuro</h5>
+                            <p class="card-text text-muted small">Adicionamos mais de 50 novos livros sobre inteligência artificial e tecnologia.</p>
+                            <a th:href="@{/login}" class="text-success text-decoration-none small" style="font-weight: 600;">Explorar Categoria <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Destaque 3 (Placeholder) -->
+                <div class="col-md-4">
+                    <div class="news-card">
+                        <img src="https://placehold.co/600x400/6c757d/ffffff?text=Empréstimo+Rápido" alt="Capa de Novidade 3">
+                        <div class="news-card-body">
+                            <h5 class="card-title text-dark">Empréstimo Físico Digitalizado</h5>
+                            <p class="card-text text-muted small">Agora ficou mais rápido retirar e devolver livros pelo nosso novo painel online.</p>
+                            <a th:href="@{/login}" class="text-success text-decoration-none small" style="font-weight: 600;">Saiba Mais <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Recursos (Features) -->
+        <section class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-5" style="color: var(--dark-bg); font-weight: 700;">Por que nos escolher?</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="feature-card bg-white">
+                            <i class="bi bi-search fs-1 mb-3 text-success"></i>
+                            <h5 class="card-title" style="font-weight: 600;">Catálogo Completo</h5>
+                            <p class="text-muted text-center">Milhares de títulos disponíveis para empréstimo imediato.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card bg-white">
+                            <i class="bi bi-person-check-fill fs-1 mb-3 text-success"></i>
+                            <h5 class="card-title" style="font-weight: 600;">Perfis Seguros</h5>
+                            <p class="text-muted text-center">Cadastro rápido e seguro para usuários e bibliotecários.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card bg-white">
+                            <i class="bi bi-clock-history fs-1 mb-3 text-success"></i>
+                            <h5 class="card-title" style="font-weight: 600;">Empréstimos Fáceis</h5>
+                            <p class="text-muted text-center">Gerencie suas devoluções e renovações com apenas um clique.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Footer - Mantendo o estilo da aplicação -->
+    <footer class="footer mt-5 pt-4 pb-4">
+        <div class="container">
+            <div class="text-center">
+                <p class="mb-0 text-white">© 2025 Biblioteca. Todos os direitos reservados.</p>
+                <div class="mt-2">
+                    <a th:href="@{/login}" class="text-white mx-2 small">Entrar</a>
+                    <span class="text-white small">|</span>
+                    <a th:href="@{/biblioteca/perfil/form}" class="text-white mx-2 small">Cadastre-se</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
