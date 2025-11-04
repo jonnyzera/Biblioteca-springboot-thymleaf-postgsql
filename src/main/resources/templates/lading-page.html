@@ -109,6 +109,11 @@
             .feature-card {
                 min-height: 200px;
             }
+            /* AJUSTE PARA O NAVBAR NO MOBILE: reduz o tamanho dos botões */
+            .navbar .d-flex .btn {
+                font-size: 0.8rem;
+                padding: 0.25rem 0.5rem;
+            }
         }
     </style>
 </head>
@@ -142,12 +147,18 @@
                 <p class="hero-subtitle">
                     Encontre os melhores títulos de ficção, ciência e muito mais. Cadastre-se gratuitamente e comece sua jornada de leitura hoje mesmo!
                 </p>
-                <a th:href="@{/biblioteca/perfil/form}" class="btn btn-warning btn-lg me-3">
-                    Cadastre-se Agora
-                </a>
-                <a th:href="@{/login}" class="btn btn-outline-light btn-lg">
-                    Acessar o Catálogo
-                </a>
+                
+                <!-- CORREÇÃO DE RESPONSIVIDADE PARA EMPILHAR OS BOTÕES NO MOBILE (Telas menores que 'sm') -->
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <a th:href="@{/biblioteca/perfil/form}" class="btn btn-warning btn-lg">
+                        Cadastre-se Agora
+                    </a>
+                    <a th:href="@{/login}" class="btn btn-outline-light btn-lg">
+                        Acessar o Catálogo
+                    </a>
+                </div>
+                <!-- FIM DA CORREÇÃO -->
+                
             </div>
         </section>
 
